@@ -1,0 +1,32 @@
+{
+  "name": "m365-wrapper",
+  "version": "1.0.0",
+  "description": "Microsoft Graph API wrapper for Microsoft Office 365 functionality: support authentication, teams and much much more",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ciacco85/m365-wrapper.git"
+  },
+  "keywords": [
+    "Graph",
+    "MSAL",
+    "Teams",
+    "Microsoft365"
+  ],
+  "author": "Francesco Venturini",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ciacco85/m365-wrapper/issues"
+  },
+  "homepage": "https://github.com/ciacco85/m365-wrapper#readme",
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "jest": "^26.0.1",
+    "ts-jest": "^25.5.1",
+    "typescript": "^3.8.3"
+  }
+}
