@@ -12,12 +12,12 @@ class M365Wrapper {
   };
   protected configuration: Configuration = {
     auth: {
-      clientId: '9f43a6bd-9b42-4cf9-82f8-d9f1960596cc',
-      authority: 'https://login.microsoftonline.com/common',
+      clientId: '',
+      authority: 'https://login.microsoftonline.com/organizations',
     },
-    // cache: {
-    //   cacheLocation: 'sessionStorage'
-    // }
+    cache: {
+      cacheLocation: 'sessionStorage'
+    }
   };
   protected GraphScopes: string[] = [...this.authPar.scopes!];
   protected providerOptions: MSALAuthenticationProviderOptions;
@@ -26,9 +26,9 @@ class M365Wrapper {
   protected options: ClientOptions;
   protected client: Client;
 
-  constructor();
-  constructor(clientId?: string);
-  constructor(clientId?: string, authority?: string) {
+ 
+  constructor(clientId: string);
+  constructor(clientId: string, authority?: string) {
     if (clientId)
       this.configuration.auth.clientId = clientId;
 
@@ -44,11 +44,10 @@ class M365Wrapper {
     //  this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.providerOptions);
 
     this.options = {
-      authProvider: this.authProvider, // An instance created from previous step
+      authProvider: this.authProvider
     };
 
     this.client = Client.initWithMiddleware(this.options);
-
   }
 
   public async loginPopup(): Promise<AuthResponse> {
@@ -74,10 +73,7 @@ class M365Wrapper {
         //const account = thatMsal.getAccount();
         // this.SET_ACCOUNT(account);
         // this.SET_ID_TOKEN(response);
-        // this.SET_LOGIN_STATE(true);
-        // await thatGraph.GetAvatar().then(a => {
-        //     this.SET_AVATAR_IMAGE_URL(a);
-        // })
+        // this.SET_LOGIN_STATE(true);       
       }).catch(async error => {
         if (error.errorMessage.indexOf("interaction_required") !== -1) {
           await this.acquireTokenPopup()
@@ -85,10 +81,7 @@ class M365Wrapper {
               const account = this.getAccount();
               // this.SET_ACCOUNT(account);
               // this.SET_ID_TOKEN(response);
-              // this.SET_LOGIN_STATE(true);
-              // await thatGraph.GetAvatar().then(a => {
-              //     this.SET_AVATAR_IMAGE_URL(a);
-              // })
+              // this.SET_LOGIN_STATE(true);              
             })
             .catch(err => {
               console.log(err);
@@ -105,10 +98,7 @@ class M365Wrapper {
             account = this.getAccount();
             // this.SET_ACCOUNT(account);
             // this.SET_ID_TOKEN(response);
-            // this.SET_LOGIN_STATE(true);
-            // await thatGraph.GetAvatar().then(a => {
-            //     this.SET_AVATAR_IMAGE_URL(a);
-            // })
+            // this.SET_LOGIN_STATE(true);            
           })
             .catch(err => {
               console.log(err);
@@ -121,7 +111,6 @@ class M365Wrapper {
     }
   }
 
-
   public getAccount(): Account {
     return this.msalApplication.getAccount();
   }
@@ -132,28 +121,18 @@ class M365Wrapper {
 
   public async GetUserDetail(): Promise<[MicrosoftGraph.User]> {
     try {
-      let userDetails = await this.client.api("/me").get();
-      let x: [MicrosoftGraph.User] = userDetails;
-      return x;
-      console.log(userDetails);
+      const userDetails: [MicrosoftGraph.User] = await this.client.api("/me").get();
+      return userDetails;      
     } catch (error) {
       throw error;
     }
-
   }
-
 
   public TestStartup(): boolean {
     return true;
   };
 }
 
-// if(typeof exports != "undefined"){    
-//   exports.M365Client = new M365Wrapper(); 
-// }else{    
-//   var M365Client =new M365Wrapper();
-// }
-
 export = M365Wrapper;
 
-new M365Wrapper().TestStartup();
+new M365Wrapper("9f43a6bd-9b42-4cf9-82f8-d9f1960596cc").TestStartup();
