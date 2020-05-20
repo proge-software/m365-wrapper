@@ -17,7 +17,7 @@
             "sourceMaps": true,
             "smartStep": true,
             "outFiles": [
-                "${workspaceFolder}/dist/**/*.js"
+                "${workspaceFolder}/lib/**/*.js"
             ]
         }
     ]
