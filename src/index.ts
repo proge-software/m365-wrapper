@@ -1,10 +1,11 @@
-import "isomorphic-fetch";
+import  "isomorphic-fetch";
+//import "requirejs";
 import { UserAgentApplication, Configuration, AuthenticationParameters, AuthResponse, Account } from 'msal';
 import { Client, ClientOptions } from '@microsoft/microsoft-graph-client';
 //import { } from '@microsoft/microsoft-graph-types';
 import { ImplicitMSALAuthenticationProvider, MSALAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/lib/src/browser";
 
-export class M365Wrapper {
+class M365Wrapper {
   protected authPar: AuthenticationParameters = {
     scopes: ['user.read', 'Calendars.ReadWrite'],
     prompt: 'select_account',
@@ -36,9 +37,20 @@ export class M365Wrapper {
 
   public static start() {
     let x = new M365Wrapper();
-    
+
   }
 
 }
 
-M365Wrapper.start();
+if(typeof exports != "undefined"){    
+  exports.M365Client = new M365Wrapper(); 
+}else{    
+  var M365Client =new M365Wrapper();
+}
+
+export = M365Wrapper;
+
+// module.exports = () =>{
+//   return new M365Wrapper();
+// }
+// M365Wrapper.start();

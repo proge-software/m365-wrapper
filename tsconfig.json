@@ -1,18 +1,17 @@
-{
-  //"target": "es5",
-  "module": "commonjs",
-  "declaration": true,
+{  
   "compilerOptions": {
-    "outDir": "dist",
+    "module": "CommonJS",
+    "outDir": "lib",
     "lib": [
       "es2016",
       "dom"
     ],
     "sourceMap": true,
     "target": "es5",
-    "moduleResolution": "node",
-  },
-  "include": [
+    //"moduleResolution": "node",
+    "declaration": true,
+  }
+  ,"include": [
     "src/**/*.ts"
   ]
 }
