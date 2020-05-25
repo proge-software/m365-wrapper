@@ -1,6 +1,6 @@
 {
   "name": "m365-wrapper",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Microsoft Graph API wrapper for Microsoft Office 365 functionality: support authentication, teams and much much more",
   "main": "dist/index.js",
   "browser": "dist/index.js",
