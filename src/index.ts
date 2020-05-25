@@ -26,7 +26,7 @@ class M365Wrapper {
   protected options: ClientOptions;
   protected client: Client;
 
- 
+
   constructor(clientId: string);
   constructor(clientId: string, authority?: string) {
     if (clientId)
@@ -37,11 +37,7 @@ class M365Wrapper {
 
     this.msalApplication = new UserAgentApplication(this.configuration);
     this.providerOptions = new MSALAuthenticationProviderOptions(this.GraphScopes);
-
-    if (true)
-      this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.providerOptions);
-    //else
-    //  this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.providerOptions);
+    this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.providerOptions);
 
     this.options = {
       authProvider: this.authProvider
@@ -122,7 +118,19 @@ class M365Wrapper {
   public async GetUserDetail(): Promise<[MicrosoftGraph.User]> {
     try {
       const userDetails: [MicrosoftGraph.User] = await this.client.api("/me").get();
-      return userDetails;      
+      return userDetails;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetEvents(): Promise<any> {
+    try {
+      const events = await this.client.api("/me/calendar/events")
+      .select('subject,organizer,attendees,start,end,location,onlineMeeting,bodyPreview,webLink,body')
+      .get()
+      ;
+      return events;
     } catch (error) {
       throw error;
     }
@@ -135,4 +143,4 @@ class M365Wrapper {
 
 export = M365Wrapper;
 
-new M365Wrapper("9f43a6bd-9b42-4cf9-82f8-d9f1960596cc").TestStartup();
+//new M365Wrapper("9f43a6bd-9b42-4cf9-82f8-d9f1960596cc").TestStartup();
