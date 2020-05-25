@@ -38,8 +38,15 @@ Login with Popup
 const authResponse = await organizationsClient.loginPopup();
 ``` 
 
+Evaluate if the user has already logged and acquire token silently
+```
+await z.StatLoginPopupProcess();
+``` 
+
 Get logged user detail
 ```
 const userDetail = await organizationsClient.GetUserDetail();
 ``` 
+
+
 
