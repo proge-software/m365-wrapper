@@ -3,6 +3,8 @@ import { UserAgentApplication, Configuration, AuthenticationParameters, AuthResp
 import { Client, ClientOptions, AuthenticationProvider } from '@microsoft/microsoft-graph-client';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import { ImplicitMSALAuthenticationProvider, MSALAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/lib/src/browser";
+import GraphEvent from "./Types/GraphEvent";
+
 //import { ImplicitMSALAuthenticationProvider as NodeImplicitMSALAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/ImplicitMSALAuthenticationProvider";
 
 class M365Wrapper {
@@ -134,6 +136,14 @@ class M365Wrapper {
     } catch (error) {
       throw error;
     }
+  }
+
+  public async GetUsers(): Promise<any> {
+  }
+
+  public async PostEvent(event: GraphEvent ): Promise<any> {
+    let res = await this.client.api('/me/calendars/AAMkAGViNDU7zAAAAAGtlAAA=/events')
+	    .post(event);
   }
 
   public TestStartup(): boolean {
