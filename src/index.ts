@@ -149,6 +149,10 @@ class M365Wrapper {
   public TestStartup(): boolean {
     return true;
   };
+
+  public TestStartup2(): number {
+    return 3;
+  };
 }
 
 export = M365Wrapper;
