@@ -55,14 +55,60 @@ const joinedTeams = await organizationsClient.GetUserJoinedTeams();
 
 Create online meeting
 ```
-const onlineMeeting = await organizationsClient.CreateOnlineMeeting();
+var meeting = {
+    subject: "Online meeting subject",
+    startDateTime: "2020-05-28T11:00:00.0000000-00:00",
+    endDateTime: "2020-05-28T13:30:00.0000000-00:00",
+    participants: {
+        attendees: [                                // Note: fill with all attendees needed followed by a comma exept the last one.
+            { upn: "name1@mydomain.com" }, 
+            { upn: "name2@mydomain.com" }, 
+            { upn: "name3@mydomain.com" }],   
+        organizer: { upn: "name4@mydomain.com" }    // Note: organizer is optional (if not specified, the comma at the end of the above line also must be omitted).
+    }
+};
+const onlineMeeting = await organizationsClient.CreateOnlineMeeting(meeting);
 ``` 
 
 Create outlook calendar event
 ```
-const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent();
+var outlCalEvent = {
+    subject: "Outlook calendar event subject",
+    body: {
+        contentType: "HTML",
+        content: "Some text message."               // Note: text message content.
+    },
+    start: {
+        dateTime: "2020-05-29T16:00:00",
+        timeZone: "W. Europe Standard Time"         // Possible admitted values can be found at https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-time-zones
+    },
+    end: {
+        dateTime: "2020-05-29T17:30:00",
+        timeZone: "W. Europe Standard Time"         // Possible admitted values can be found at https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-time-zones
+    },
+    location: {
+        displayName: "Online on Teams"
+    },
+    attendees: [                                    // Note: fill with all attendees needed followed by a comma exept the last one
+        {
+            emailAddress: {
+                address: "name1@mydomain.com",
+                name: "Name Surmane"
+            },
+            type: "required"                        // Note: Possible admitted values are required, optional, resource.
+        },
+        {
+            emailAddress: {
+                address: "name2@mydomain.com",
+                name: "Name Surname"
+            },
+            type: "optional"                        // Note: Possible admitted values are required, optional, resource.
+        }
+    ],
+    allowNewTimeProposals: true,
+    isOnlineMeeting: true,
+    onlineMeetingProvider: "teamsForBusiness"
+}
+const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent(outlCalEvent);
 ``` 
-
-
-
 
