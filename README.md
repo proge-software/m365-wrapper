@@ -48,5 +48,21 @@ Get logged user detail
 const userDetail = await organizationsClient.GetUserDetail();
 ``` 
 
+Get user joined teams
+```
+const joinedTeams = await organizationsClient.GetUserJoinedTeams();
+``` 
+
+Create online meeting
+```
+const onlineMeeting = await organizationsClient.CreateOnlineMeeting();
+``` 
+
+Create outlook calendar event
+```
+const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent();
+``` 
+
+
 
 

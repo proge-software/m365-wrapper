@@ -154,7 +154,6 @@ class M365Wrapper {
       .select('Id,displayName,description')
       .get();
       return teams;
-      //return "Test return value";
     }
     catch (error)
     {
