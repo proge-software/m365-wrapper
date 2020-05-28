@@ -9,7 +9,8 @@ import GraphEvent from "./Types/GraphEvent";
 
 class M365Wrapper {
   protected authPar: AuthenticationParameters = {
-    scopes: ['user.read', 'Calendars.ReadWrite'],
+    scopes: ['User.Read', 'Calendars.ReadWrite', 'Calendars.Read.Shared', 
+    'email', 'Team.ReadBasic.All', 'User.ReadBasic.All', 'OnlineMeetings.ReadWrite'],
     prompt: 'select_account',
   };
   protected configuration: Configuration = {
@@ -141,14 +142,43 @@ class M365Wrapper {
   public async GetUsers(): Promise<any> {
   }
 
-  public async PostEvent(event: GraphEvent ): Promise<any> {
-    let res = await this.client.api('/me/calendars/AAMkAGViNDU7zAAAAAGtlAAA=/events')
-	    .post(event);
+  // public async PostEvent(event: GraphEvent ): Promise<any> {
+  //   let res = await this.client.api('/me/calendars/AAMkAGViNDU7zAAAAAGtlAAA=/events')
+	//     .post(event);
+  // }
+
+  public async GetUserJoinedTeams(): Promise<any> {
+    try 
+    {
+      const teams = await this.client.api("/me/joinedTeams")
+      .select('Id,displayName,description')
+      .get();
+      return teams;
+    }
+    catch (error)
+    {
+      throw error;
+    }
+  }
+  
+    public async CreateOnlineMeeting(onlineMeeting: MicrosoftGraph.OnlineMeeting ): Promise<[MicrosoftGraph.OnlineMeeting]> {
+    
+    let res: [MicrosoftGraph.OnlineMeeting] = await this.client.api('/me/onlineMeetings')
+      .post(onlineMeeting);
+
+      return res;
   }
 
-  public TestStartup(): boolean {
-    return true;
-  };
+  public async CreateOutlookCalendarEvent(userEvent: MicrosoftGraph.Event): Promise< [MicrosoftGraph.Event]> {
+    //POST /users/{id | userPrincipalName}/calendar/events   <<< Da provare
+
+    let res:  [MicrosoftGraph.Event] = await this.client.api('/me/events')
+    .version('beta')
+    .post(userEvent);
+
+    return res;
+  }
+
 }
 
 export = M365Wrapper;
