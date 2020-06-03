@@ -81,7 +81,7 @@ var outlCalEvent = {
     subject: "Outlook calendar event subject",
     body: {
         contentType: "HTML",
-        content: "Some text message."               // Note: text message content.
+        content: "Some text message."               // Text message content.
     },
     start: {
         dateTime: "2020-05-29T16:00:00",
@@ -94,25 +94,28 @@ var outlCalEvent = {
     location: {
         displayName: "Online on Teams"
     },
-    attendees: [                                    // Note: fill with all attendees needed followed by a comma exept the last one
+    attendees: [                                    // Fill with all attendees needed followed by a comma exept the last one
         {
             emailAddress: {
                 address: "name1@mydomain.com",
                 name: "Name Surmane"
             },
-            type: "required"                        // Note: Possible admitted values are required, optional, resource.
+            type: "required"                        // Possible admitted values are required, optional, resource.
         },
         {
             emailAddress: {
                 address: "name2@mydomain.com",
                 name: "Name Surname"
             },
-            type: "optional"                        // Note: Possible admitted values are required, optional, resource.
+            type: "optional"                        // Possible admitted values are required, optional, resource.
         }
     ],
-    allowNewTimeProposals: true,
-    isOnlineMeeting: true,
-    onlineMeetingProvider: "teamsForBusiness"
+    allowNewTimeProposals: true,                    // True if the meeting organizer allows invitees to propose a new time when responding, false otherwise. Optional. Default is true.
+    isOnlineMeeting: true,      // True if this event has online meeting information (that is, onlineMeeting points to an onlineMeetingInfo resource), false otherwise. 
+                                // Default is false (onlineMeeting is null). Optional. After you set isOnlineMeeting to true, onlineMeeting is initialized. 
+                                // Subsequently Outlook ignores any further changes to isOnlineMeeting, and the meeting remains available online.
+    onlineMeetingProvider: "teamsForBusiness"   // Online meeting service provider. By default is unknown. Possible values are unknown, teamsForBusiness, skypeForBusiness, and skypeForConsumer. Optional.
+                                                // After you set onlineMeetingProvider, onlineMeeting is initialized. Subsequently you cannot change onlineMeetingProvider again, and the meeting remains available online.
 }
 const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent(outlCalEvent);
 ``` 
