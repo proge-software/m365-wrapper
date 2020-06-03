@@ -53,6 +53,11 @@ Get user joined teams
 const joinedTeams = await organizationsClient.GetUserJoinedTeams();
 ``` 
 
+Get users from your organization
+```
+const joinedTeams = await organizationsClient.GetUsers();
+``` 
+
 Create online meeting
 ```
 var meeting = {

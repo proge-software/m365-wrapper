@@ -1,6 +1,6 @@
 {
   "name": "m365-wrapper",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "description": "Microsoft Graph API wrapper for Microsoft Office 365 functionality: support authentication, teams and much much more",
   "main": "dist/index.js",
   "browser": "dist/index.js",
@@ -25,7 +25,7 @@
     "Microsoft365"
   ],
   "author": "Francesco Venturini",
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/proge-software/m365-wrapper/issues"
   },

@@ -3,14 +3,14 @@ import { UserAgentApplication, Configuration, AuthenticationParameters, AuthResp
 import { Client, ClientOptions, AuthenticationProvider } from '@microsoft/microsoft-graph-client';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import { ImplicitMSALAuthenticationProvider, MSALAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/lib/src/browser";
-import GraphEvent from "./Types/GraphEvent";
+import UserSearchRequest from "./Types/UserSearchRequest";
 
 //import { ImplicitMSALAuthenticationProvider as NodeImplicitMSALAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/ImplicitMSALAuthenticationProvider";
 
 class M365Wrapper {
   protected authPar: AuthenticationParameters = {
-    scopes: ['User.Read', 'Calendars.ReadWrite', 'Calendars.Read.Shared', 
-    'email', 'Team.ReadBasic.All', 'User.ReadBasic.All', 'OnlineMeetings.ReadWrite'],
+    scopes: ['User.Read', 'Calendars.ReadWrite', 'Calendars.Read.Shared',
+      'email', 'Team.ReadBasic.All', 'User.ReadBasic.All', 'OnlineMeetings.ReadWrite'],
     prompt: 'select_account',
   };
   protected configuration: Configuration = {
@@ -130,51 +130,55 @@ class M365Wrapper {
   public async GetEvents(): Promise<any> {
     try {
       const events = await this.client.api("/me/calendar/events")
-      .select('subject,organizer,attendees,start,end,location,onlineMeeting,bodyPreview,webLink,body')
-      .get()
-      ;
+        .select('subject,organizer,attendees,start,end,location,onlineMeeting,bodyPreview,webLink,body')
+        .get()
+        ;
       return events;
     } catch (error) {
       throw error;
     }
   }
 
-  public async GetUsers(): Promise<any> {
+  public async GetUsers(UserSearchRequest: UserSearchRequest): Promise<MicrosoftGraph.User[]> {
+    let query = this.client.api('/users');
+
+    if (UserSearchRequest && UserSearchRequest.issuer && UserSearchRequest.mail) {
+      query = query.filter(`identities/any(c:c/issuerAssignedId eq '${UserSearchRequest.mail}' and c/issuer eq '${UserSearchRequest.issuer}')`);
+    }
+
+    let res: MicrosoftGraph.User[] = await query.select('displayName,givenName,postalCode,mail,surname,userPrincipalName')
+      .get();
+
+    return res;
   }
 
-  // public async PostEvent(event: GraphEvent ): Promise<any> {
-  //   let res = await this.client.api('/me/calendars/AAMkAGViNDU7zAAAAAGtlAAA=/events')
-	//     .post(event);
-  // }
 
   public async GetUserJoinedTeams(): Promise<any> {
-    try 
-    {
+    try {
       const teams = await this.client.api("/me/joinedTeams")
-      .select('Id,displayName,description')
-      .get();
+        .select('Id,displayName,description')
+        .get();
       return teams;
     }
-    catch (error)
-    {
+    catch (error) {
       throw error;
     }
   }
-  
-    public async CreateOnlineMeeting(onlineMeeting: MicrosoftGraph.OnlineMeeting ): Promise<[MicrosoftGraph.OnlineMeeting]> {
-    
+
+  public async CreateOnlineMeeting(onlineMeeting: MicrosoftGraph.OnlineMeeting): Promise<[MicrosoftGraph.OnlineMeeting]> {
+
     let res: [MicrosoftGraph.OnlineMeeting] = await this.client.api('/me/onlineMeetings')
       .post(onlineMeeting);
 
-      return res;
+    return res;
   }
 
-  public async CreateOutlookCalendarEvent(userEvent: MicrosoftGraph.Event): Promise< [MicrosoftGraph.Event]> {
+  public async CreateOutlookCalendarEvent(userEvent: MicrosoftGraph.Event): Promise<[MicrosoftGraph.Event]> {
     //POST /users/{id | userPrincipalName}/calendar/events   <<< Da provare
 
-    let res:  [MicrosoftGraph.Event] = await this.client.api('/me/events')
-    .version('beta')
-    .post(userEvent);
+    let res: [MicrosoftGraph.Event] = await this.client.api('/me/events')
+      .version('beta')
+      .post(userEvent);
 
     return res;
   }
