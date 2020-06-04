@@ -110,12 +110,21 @@ var outlCalEvent = {
             type: "optional"                        // Possible admitted values are required, optional, resource.
         }
     ],
-    allowNewTimeProposals: true,                    // True if the meeting organizer allows invitees to propose a new time when responding, false otherwise. Optional. Default is true.
-    isOnlineMeeting: true,      // True if this event has online meeting information (that is, onlineMeeting points to an onlineMeetingInfo resource), false otherwise. 
-                                // Default is false (onlineMeeting is null). Optional. After you set isOnlineMeeting to true, onlineMeeting is initialized. 
-                                // Subsequently Outlook ignores any further changes to isOnlineMeeting, and the meeting remains available online.
-    onlineMeetingProvider: "teamsForBusiness"   // Online meeting service provider. By default is unknown. Possible values are unknown, teamsForBusiness, skypeForBusiness, and skypeForConsumer. Optional.
-                                                // After you set onlineMeetingProvider, onlineMeeting is initialized. Subsequently you cannot change onlineMeetingProvider again, and the meeting remains available online.
+    allowNewTimeProposals: true,                // Optional. True if the meeting organizer allows invitees to propose a new time when responding, false otherwise. Default is true.
+    isOnlineMeeting: true,      // Optional. True if this event has online meeting information (that is, onlineMeeting points to an onlineMeetingInfo resource), false otherwise. 
+                                // After you set isOnlineMeeting to true, onlineMeeting is initialized. Subsequently Outlook ignores any further changes to isOnlineMeeting, and the 
+                                // meeting remains available online. Default is false (onlineMeeting is null).
+    onlineMeetingProvider: "teamsForBusiness",      // Optional. Online meeting service provider. Possible values are unknown, teamsForBusiness, skypeForBusiness, and skypeForConsumer. 
+                                                    // After you set onlineMeetingProvider, onlineMeeting is initialized. Subsequently you cannot change onlineMeetingProvider again, and 
+                                                    // the meeting remains available online. Default is unknown.
+    categories: [               // Optional. Displayed name of one or more Outlook categories (defined for the user) to associate with the event.
+        "Orange Category", 
+        "Purple Category",
+        "Blue Category"
+    ],
+    importance: "normal",       // Optional. Importance of the event. Possible values are: low, normal, high. Default is normal.
+    isAllDay: "false"           // Optional. Set to true if the event lasts all day. If true, regardless of whether it's a single-day or multi-day event, start 
+                                // and end time must be set to midnight (period must be at least 24 hours long) and be in the same time zone. Default is false.    
 }
 const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent(outlCalEvent);
 ``` 

@@ -164,7 +164,7 @@ class M365Wrapper {
       throw error;
     }
   }
-
+  
   public async CreateOnlineMeeting(onlineMeeting: MicrosoftGraph.OnlineMeeting): Promise<[MicrosoftGraph.OnlineMeeting]> {
 
     let res: [MicrosoftGraph.OnlineMeeting] = await this.client.api('/me/onlineMeetings')
