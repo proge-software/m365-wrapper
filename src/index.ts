@@ -10,7 +10,8 @@ import UserSearchRequest from "./Types/UserSearchRequest";
 class M365Wrapper {
   protected authPar: AuthenticationParameters = {
     scopes: ['User.Read', 'Calendars.ReadWrite', 'Calendars.Read.Shared',
-      'email', 'Team.ReadBasic.All', 'User.ReadBasic.All', 'OnlineMeetings.ReadWrite'],
+      'email', 'Team.ReadBasic.All', 'User.ReadBasic.All', 'OnlineMeetings.ReadWrite', 
+      'Files.Read.All'],
     prompt: 'select_account',
   };
   protected configuration: Configuration = {
@@ -182,6 +183,58 @@ class M365Wrapper {
 
     return res;
   }
+
+
+  // GetTeamMembers: permissions need Admin consent
+  // public async GetTeamMembers(teamId: string): Promise<[MicrosoftGraph.DirectoryObject]> {
+  //   try {
+  //     const members = await this.client.api("/groups/" + teamId + "/members")
+  //       .get();
+  //     return members;
+  //   }
+  //   catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  public async GetTeamDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      var items = null;
+
+      if (relativePath.length > 0 && relativePath != "/") {  
+        if (!relativePath.startsWith("/")) {
+          relativePath = "/" + relativePath;
+        }
+        if (relativePath.endsWith("/")) {
+          relativePath = relativePath.slice(0, -1);
+        }
+        items = await this.client.api("/groups/" + teamGroupId + "/drive/root:" + relativePath + ":/children")
+        .get();
+      } 
+      else {
+        items = await this.client.api("/groups/" + teamGroupId + "/drive/root/children")
+        .get();
+      }
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+
+  // Not working (nb: beta)
+  // public async GetUserPresence(userId: string): Promise<any> {
+  //   try {
+  //     const members = await this.client.api("/beta/users/" + userId + "/presence")
+  //       .get();
+  //     return members;
+  //   }
+  //   catch (error) {
+  //     throw error;
+  //   }
+  // }
 
 }
 
