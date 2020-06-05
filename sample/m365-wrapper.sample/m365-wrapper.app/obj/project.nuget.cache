@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "pMRgfLT9XKibVz1TiOqENHfgZkIJj3XG7l8mpn/UY4xQMIlejOdypcpVT3df+UAebJydD0KuNJb3Mjb80wZwuQ==",
+  "success": true,
+  "projectFilePath": "C:\\ProgeGithubRepos\\m365-wrapper\\sample\\m365-wrapper.sample\\m365-wrapper.app\\m365-wrapper.app.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Francesco\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}
