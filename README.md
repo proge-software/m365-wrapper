@@ -135,3 +135,8 @@ var teamGroupId = "";                       // A valid Teams group unique id (re
 var relPath = "/General/MySpecificFolder";  // Optional. Relative path (the slash ("/") at the beginning and/or at the end can be specified or omitted).
 const driveItemContentList = await organizationsClient.GetTeamDriveItems(teamGroupId, relPath);
 ``` 
+
+Logout (with account choice)
+```
+await organizationsClient.logout();
+``` 
