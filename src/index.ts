@@ -11,7 +11,7 @@ class M365Wrapper {
   protected authPar: AuthenticationParameters = {
     scopes: ['User.Read', 'Calendars.ReadWrite', 'Calendars.Read.Shared',
       'email', 'Team.ReadBasic.All', 'User.ReadBasic.All', 'OnlineMeetings.ReadWrite', 
-      'Files.Read.All'],
+      'Files.Read.All', 'Group.Read.All', 'Reports.Read.All'],
     prompt: 'select_account',
   };
   protected configuration: Configuration = {
@@ -184,19 +184,6 @@ class M365Wrapper {
     return res;
   }
 
-
-  // GetTeamMembers: permissions need Admin consent
-  // public async GetTeamMembers(teamId: string): Promise<[MicrosoftGraph.DirectoryObject]> {
-  //   try {
-  //     const members = await this.client.api("/groups/" + teamId + "/members")
-  //       .get();
-  //     return members;
-  //   }
-  //   catch (error) {
-  //     throw error;
-  //   }
-  // }
-
   public async GetTeamDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
       var items = null;
@@ -223,6 +210,90 @@ class M365Wrapper {
     }
   }
 
+  public async GetTeam(teamId: string): Promise<MicrosoftGraph.Team> {
+    try {
+      const retTeam = await this.client.api("/teams/" + teamId )
+        .get();
+      return retTeam;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetTeamChannels(teamId: string): Promise<[MicrosoftGraph.Channel]> {
+    try {
+      const retChannels = await this.client.api("/teams/" + teamId + "/channels")
+        .get();
+      return retChannels;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetTeamChannel(teamId: string, channelId: string): Promise<MicrosoftGraph.Channel> {
+    try {
+      const retChannel = await this.client.api("/teams/" + teamId + "/channels/" + channelId)
+        .get();
+      return retChannel;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetTeamMembers(teamId: string): Promise<[MicrosoftGraph.DirectoryObject]> {
+    try {
+      const retMembers = await this.client.api("/groups/" + teamId + "/members")
+        .get();
+      return retMembers;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetTeamEvents(teamId: string): Promise<[MicrosoftGraph.Event]> {
+    try {
+      const retEvents = await this.client.api("/groups/" + teamId + "/events")
+        .get();
+      return retEvents;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetUserByIdOrEmail(userIdOrEmail: string): Promise<[MicrosoftGraph.User]> {
+    try {
+      const retUser = await this.client.api("/users/" + userIdOrEmail)
+        .get();
+      return retUser;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  // GetMyApplications: Permissions problems (output 403: Forbidden)
+  public async GetMyApplications(): Promise<any> {
+    try {
+      // const retReport = await this.client.api("/reports/getOffice365ActivationsUserDetail(period='D7')")
+      // const retReport = await this.client.api("/reports/getOffice365ActivationsUserDetail")
+      const retReport = await this.client.api("/reports/getOffice365ActiveUserDetail(period='D7')")
+        .get();
+      return retReport;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+
+
+
+
 
   // Not working (nb: beta)
   // public async GetUserPresence(userId: string): Promise<any> {
@@ -238,6 +309,7 @@ class M365Wrapper {
 
 }
 
-export = M365Wrapper;
 
-//new M365Wrapper("9f43a6bd-9b42-4cf9-82f8-d9f1960596cc").TestStartup();
+
+
+export = M365Wrapper;
