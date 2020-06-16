@@ -131,12 +131,50 @@ const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent(outlCal
 
 Access a Teams group default document library and get the list of the children of a DriveItem by root relative path.
 ```
-var teamGroupId = "";                       // A valid Teams group unique id (required).
-var relPath = "/General/MySpecificFolder";  // Optional. Relative path (the slash ("/") at the beginning and/or at the end can be specified or omitted).
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+var relPath = "/General/MySpecificFolder";                      // Optional. Relative path (the slash ("/") at the beginning and/or at the end can be specified or omitted).
 const driveItemContentList = await organizationsClient.GetTeamDriveItems(teamGroupId, relPath);
 ``` 
 
-Logout (with account choice)
+Logout (with account choice).
 ```
 await organizationsClient.logout();
 ``` 
+
+Get data of the specified team (Output type: MicrosoftGraph.Team).
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const returnedTeam = await organizationsClient.GetTeam(teamGroupId);
+``` 
+
+Get the list of the channels of a team (Output type: collection of MicrosoftGraph.Channel).
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const teamChannelsList = await organizationsClient.GetTeamChannels(teamGroupId);
+``` 
+
+Get data of a team's channel (Output type: MicrosoftGraph.Channel).
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+var channelId = "<channelId>";                                  // A valid channel unique id (required).
+const returnedChannel = await organizationsClient.GetTeamChannel();
+``` 
+
+Get a list of the group's direct members (Output type: collection of MicrosoftGraph.DirectoryObject).
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const teamMembersList = await organizationsClient.GetTeamMembers(teamGroupId);
+``` 
+
+Get a list with the group's events (Output type: collection of MicrosoftGraph.Event).
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const teamEventsList = await organizationsClient.GetTeamEvents(teamGroupId);
+``` 
+
+Get data of a user (Output type: MicrosoftGraph.User).
+```
+var userIdOrEmail = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx> | <userEmail>";     // A valid user Id or email (required).
+const returnedUser = await organizationsClient.GetUserByIdOrEmail(userIdOrEmail);
+``` 
+
