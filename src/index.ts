@@ -153,7 +153,6 @@ class M365Wrapper {
     return res;
   }
 
-
   public async GetUserJoinedTeams(): Promise<any> {
     try {
       const teams = await this.client.api("/me/joinedTeams")
@@ -190,16 +189,16 @@ class M365Wrapper {
 
       if (relativePath.length > 0 && relativePath != "/") {  
         if (!relativePath.startsWith("/")) {
-          relativePath = "/" + relativePath;
+          relativePath = `/${relativePath}`;
         }
         if (relativePath.endsWith("/")) {
           relativePath = relativePath.slice(0, -1);
         }
-        items = await this.client.api("/groups/" + teamGroupId + "/drive/root:" + relativePath + ":/children")
+        items = await this.client.api(`/groups/${teamGroupId}/drive/root:${relativePath}:/children`)
         .get();
       } 
       else {
-        items = await this.client.api("/groups/" + teamGroupId + "/drive/root/children")
+        items = await this.client.api(`/groups/${teamGroupId}/drive/root/children`)
         .get();
       }
       
@@ -212,7 +211,7 @@ class M365Wrapper {
 
   public async GetTeam(teamId: string): Promise<MicrosoftGraph.Team> {
     try {
-      const retTeam = await this.client.api("/teams/" + teamId )
+      const retTeam = await this.client.api(`/teams/${teamId}`)
         .get();
       return retTeam;
     }
@@ -223,7 +222,7 @@ class M365Wrapper {
 
   public async GetTeamChannels(teamId: string): Promise<[MicrosoftGraph.Channel]> {
     try {
-      const retChannels = await this.client.api("/teams/" + teamId + "/channels")
+      const retChannels = await this.client.api(`/teams/${teamId}/channels`)
         .get();
       return retChannels;
     }
@@ -234,7 +233,7 @@ class M365Wrapper {
 
   public async GetTeamChannel(teamId: string, channelId: string): Promise<MicrosoftGraph.Channel> {
     try {
-      const retChannel = await this.client.api("/teams/" + teamId + "/channels/" + channelId)
+      const retChannel = await this.client.api(`/teams/${teamId}/channels/${channelId}`)
         .get();
       return retChannel;
     }
@@ -245,7 +244,7 @@ class M365Wrapper {
 
   public async GetTeamMembers(teamId: string): Promise<[MicrosoftGraph.DirectoryObject]> {
     try {
-      const retMembers = await this.client.api("/groups/" + teamId + "/members")
+      const retMembers = await this.client.api(`/groups/${teamId}/members`)
         .get();
       return retMembers;
     }
@@ -256,7 +255,7 @@ class M365Wrapper {
 
   public async GetTeamEvents(teamId: string): Promise<[MicrosoftGraph.Event]> {
     try {
-      const retEvents = await this.client.api("/groups/" + teamId + "/events")
+      const retEvents = await this.client.api(`/groups/${teamId}/events`)
         .get();
       return retEvents;
     }
@@ -267,7 +266,7 @@ class M365Wrapper {
 
   public async GetUserByIdOrEmail(userIdOrEmail: string): Promise<[MicrosoftGraph.User]> {
     try {
-      const retUser = await this.client.api("/users/" + userIdOrEmail)
+      const retUser = await this.client.api(`/users/${userIdOrEmail}`)
         .get();
       return retUser;
     }
