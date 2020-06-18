@@ -43,19 +43,29 @@ Evaluate if the user has already logged and acquire token silently
 await z.StatLoginPopupProcess();
 ``` 
 
-Get logged user detail
+Logout (with account choice).
 ```
-const userDetail = await organizationsClient.GetUserDetail();
+await organizationsClient.logout();
 ``` 
 
-Get user joined teams
+Get logged user details
 ```
-const joinedTeams = await organizationsClient.GetUserJoinedTeams();
+const userDetails = await organizationsClient.GetMyDetails();
+``` 
+
+Get logged user events (for each event returns subject, organizer, attendees, start, end, location, onlineMeeting, bodyPreview, webLink, body)
+```
+const userEvents = await organizationsClient.GetMyEvents();
+``` 
+
+Get logged user joined teams
+```
+const joinedTeams = await organizationsClient.GetMyJoinedTeams();
 ``` 
 
 Get users from your organization
 ```
-const joinedTeams = await organizationsClient.GetUsers();
+const myOrgUsers = await organizationsClient.GetUsers();
 ``` 
 
 Create online meeting
@@ -129,16 +139,29 @@ var outlCalEvent = {
 const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent(outlCalEvent);
 ``` 
 
+Enumerate OneDrive resources available to the logged user (Output type: collection of MicrosoftGraph.Drive).
+```
+const myDrives = await organizationsClient.GetMyDrives();
+```
+
+Enumerate the DriveItem resources in the root of a specific OneDrive resource (Output type: collection of MicrosoftGraph.DriveItem).
+```
+var driveId = "<driveId>";      // A valid drive unique id (required).
+const driveItems = await organizationsClient.GetDriveItems(driveId);
+```
+
+Enumerate the DriveItems resources in the folder of a specific OneDrive resource (Output type: collection of MicrosoftGraph.DriveItem).
+```
+var driveId = "<driveId>";      // A valid drive unique id (required).
+var folderId = "<folderId>";    // A valid folder id (required).
+const folderItems = await organizationsClient.GetDriveFolderItems(driveId, folderId);
+```
+
 Access a Teams group default document library and get the list of the children of a DriveItem by root relative path.
 ```
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 var relPath = "/General/MySpecificFolder";                      // Optional. Relative path (the slash ("/") at the beginning and/or at the end can be specified or omitted).
 const driveItemContentList = await organizationsClient.GetTeamDriveItems(teamGroupId, relPath);
-``` 
-
-Logout (with account choice).
-```
-await organizationsClient.logout();
 ``` 
 
 Get data of the specified team (Output type: MicrosoftGraph.Team).

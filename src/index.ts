@@ -9,8 +9,9 @@ import UserSearchRequest from "./Types/UserSearchRequest";
 
 class M365Wrapper {
   protected authPar: AuthenticationParameters = {
-    scopes: ['User.Read', 'Calendars.ReadWrite', 'Calendars.Read.Shared',
-      'email', 'Team.ReadBasic.All', 'User.ReadBasic.All', 'OnlineMeetings.ReadWrite', 
+    scopes: ['User.Read', 'User.ReadBasic.All', 
+      'Calendars.ReadWrite', 'Calendars.Read.Shared',
+      'email', 'Team.ReadBasic.All',  'OnlineMeetings.ReadWrite', 
       'Files.Read.All', 'Group.Read.All', 'Reports.Read.All'],
     prompt: 'select_account',
   };
@@ -119,21 +120,21 @@ class M365Wrapper {
     this.msalApplication.logout();
   }
 
-  public async GetUserDetail(): Promise<[MicrosoftGraph.User]> {
+  public async GetMyDetails(): Promise<MicrosoftGraph.User> {
     try {
-      const userDetails: [MicrosoftGraph.User] = await this.client.api("/me").get();
+      const userDetails: MicrosoftGraph.User = await this.client.api("/me")
+      .get();
       return userDetails;
     } catch (error) {
       throw error;
     }
   }
 
-  public async GetEvents(): Promise<any> {
+  public async GetMyEvents(): Promise<[MicrosoftGraph.Event]> {
     try {
       const events = await this.client.api("/me/calendar/events")
         .select('subject,organizer,attendees,start,end,location,onlineMeeting,bodyPreview,webLink,body')
-        .get()
-        ;
+        .get();
       return events;
     } catch (error) {
       throw error;
@@ -153,7 +154,7 @@ class M365Wrapper {
     return res;
   }
 
-  public async GetUserJoinedTeams(): Promise<any> {
+  public async GetMyJoinedTeams(): Promise<[MicrosoftGraph.Team]> {
     try {
       const teams = await this.client.api("/me/joinedTeams")
         .select('Id,displayName,description')
@@ -181,6 +182,42 @@ class M365Wrapper {
       .post(userEvent);
 
     return res;
+  }
+
+  public async GetMyDrives(): Promise<[MicrosoftGraph.Drive]> {
+    try {
+      const items = await this.client.api("/me/drives")
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetDriveItems(driveId: string): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      const items = await this.client.api(`/drives/${driveId}/root/children`)
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetDriveFolderItems(driveId: string, folderId: string): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      const items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`) 
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
   }
 
   public async GetTeamDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
