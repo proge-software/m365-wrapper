@@ -25,6 +25,8 @@ This library, like Msal, implements the [Implicit Grant Flow](https://docs.micro
 
 ## Usage
 
+### Authentication
+
 Client instance
 ```
 var clientApplicationId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";
@@ -43,32 +45,75 @@ Evaluate if the user has already logged and acquire token silently
 await z.StatLoginPopupProcess();
 ``` 
 
-Logout (with account choice).
+Logout (with account choice)
 ```
 await organizationsClient.logout();
 ``` 
 
-Get logged user details
+### User Info
+
+Get logged user details (output type: MicrosoftGraph.User)
 ```
 const userDetails = await organizationsClient.GetMyDetails();
 ``` 
 
-Get logged user events (for each event returns subject, organizer, attendees, start, end, location, onlineMeeting, bodyPreview, webLink, body)
+Get data of a user (output type: MicrosoftGraph.User)
+```
+var userIdOrEmail = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx> | <userEmail>";     // A valid user id or email (required).
+const returnedUser = await organizationsClient.GetUserByIdOrEmail(userIdOrEmail);
+``` 
+
+Get logged user events (output type: collection of {subject, organizer, attendees, start, end, location, onlineMeeting, bodyPreview, webLink, body})
 ```
 const userEvents = await organizationsClient.GetMyEvents();
 ``` 
 
-Get logged user joined teams
+Get logged user joined teams (output type: collection of MicrosoftGraph.Team)
 ```
 const joinedTeams = await organizationsClient.GetMyJoinedTeams();
 ``` 
 
-Get users from your organization
+Get users from your organization (output type: collection of MicrosoftGraph.User)
 ```
 const myOrgUsers = await organizationsClient.GetUsers();
 ``` 
 
-Create online meeting
+### Teams info
+
+Get data of the specified team (output type: MicrosoftGraph.Team)
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const returnedTeam = await organizationsClient.GetTeam(teamGroupId);
+``` 
+
+Get the list of the channels of a team (output type: collection of MicrosoftGraph.Channel)
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const teamChannelsList = await organizationsClient.GetTeamChannels(teamGroupId);
+``` 
+
+Get data of a team's channel (output type: MicrosoftGraph.Channel)
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+var channelId = "<channelId>";                                  // A valid channel unique id (required).
+const returnedChannel = await organizationsClient.GetTeamChannel();
+``` 
+
+Get a list of the group's direct members (output type: collection of MicrosoftGraph.DirectoryObject)
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const teamMembersList = await organizationsClient.GetTeamMembers(teamGroupId);
+``` 
+
+Get a list with the group's events (output type: collection of MicrosoftGraph.Event)
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const teamEventsList = await organizationsClient.GetTeamEvents(teamGroupId);
+``` 
+
+### Teams meeting
+
+Create online meeting (note: the meeting does not show up on the user's calendar. Output type: MicrosoftGraph.OnlineMeeting)
 ```
 var meeting = {
     subject: "Online meeting subject",
@@ -85,7 +130,7 @@ var meeting = {
 const onlineMeeting = await organizationsClient.CreateOnlineMeeting(meeting);
 ``` 
 
-Create outlook calendar event
+Create outlook calendar event (output type: MicrosoftGraph.Event)
 ```
 var outlCalEvent = {
     subject: "Outlook calendar event subject",
@@ -139,65 +184,41 @@ var outlCalEvent = {
 const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent(outlCalEvent);
 ``` 
 
-Enumerate OneDrive resources available to the logged user (Output type: collection of MicrosoftGraph.Drive).
+### One drive
+
+Enumerate OneDrive resources available to the logged user (output type: collection of MicrosoftGraph.Drive)
 ```
 const myDrives = await organizationsClient.GetMyDrives();
 ```
 
-Enumerate the DriveItem resources in the root of a specific OneDrive resource (Output type: collection of MicrosoftGraph.DriveItem).
+Enumerate OneDrive resources available to the team group (output type: collection of MicrosoftGraph.Drive)
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const driveItems = await organizationsClient.GetTeamDrives(teamGroupId);
+```
+
+Enumerate the Drives (document libraries) under the given SharePoint site (output type: collection of MicrosoftGraph.Drive)
+```
+var siteIdOrName = "<siteIdOrName>";        // A valid sharepoint site name or id (required; site name example: contoso.sharepoint.com).
+const driveItems = await organizationsClient.GetSiteDrives(siteIdOrName);
+```
+
+Enumerate the DriveItem resources in the root of a specific OneDrive resource (output type: collection of MicrosoftGraph.DriveItem)
 ```
 var driveId = "<driveId>";      // A valid drive unique id (required).
 const driveItems = await organizationsClient.GetDriveItems(driveId);
 ```
 
-Enumerate the DriveItems resources in the folder of a specific OneDrive resource (Output type: collection of MicrosoftGraph.DriveItem).
+Enumerate the DriveItems resources in the folder of a specific OneDrive resource (output type: collection of MicrosoftGraph.DriveItem)
 ```
 var driveId = "<driveId>";      // A valid drive unique id (required).
 var folderId = "<folderId>";    // A valid folder id (required).
 const folderItems = await organizationsClient.GetDriveFolderItems(driveId, folderId);
 ```
 
-Access a Teams group default document library and get the list of the children of a DriveItem by root relative path.
+Access a Teams group default document library and get the list of the children of a DriveItem by root relative path (output type: collection of MicrosoftGraph.DriveItem)
 ```
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 var relPath = "/General/MySpecificFolder";                      // Optional. Relative path (the slash ("/") at the beginning and/or at the end can be specified or omitted).
-const driveItemContentList = await organizationsClient.GetTeamDriveItems(teamGroupId, relPath);
+const driveItemContentList = await organizationsClient.GetTeamDefaultDriveItems(teamGroupId, relPath);
 ``` 
-
-Get data of the specified team (Output type: MicrosoftGraph.Team).
-```
-var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
-const returnedTeam = await organizationsClient.GetTeam(teamGroupId);
-``` 
-
-Get the list of the channels of a team (Output type: collection of MicrosoftGraph.Channel).
-```
-var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
-const teamChannelsList = await organizationsClient.GetTeamChannels(teamGroupId);
-``` 
-
-Get data of a team's channel (Output type: MicrosoftGraph.Channel).
-```
-var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
-var channelId = "<channelId>";                                  // A valid channel unique id (required).
-const returnedChannel = await organizationsClient.GetTeamChannel();
-``` 
-
-Get a list of the group's direct members (Output type: collection of MicrosoftGraph.DirectoryObject).
-```
-var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
-const teamMembersList = await organizationsClient.GetTeamMembers(teamGroupId);
-``` 
-
-Get a list with the group's events (Output type: collection of MicrosoftGraph.Event).
-```
-var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
-const teamEventsList = await organizationsClient.GetTeamEvents(teamGroupId);
-``` 
-
-Get data of a user (Output type: MicrosoftGraph.User).
-```
-var userIdOrEmail = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx> | <userEmail>";     // A valid user Id or email (required).
-const returnedUser = await organizationsClient.GetUserByIdOrEmail(userIdOrEmail);
-``` 
-
