@@ -196,6 +196,30 @@ class M365Wrapper {
     }
   }
 
+  public async GetTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
+    try {
+      const items = await this.client.api(`/groups/${teamGroupId}/drives`)
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetSiteDrives(siteIdOrName: string): Promise<[MicrosoftGraph.Drive]> {
+    try {
+      const items = await this.client.api(`/sites/${siteIdOrName}/drives`)
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
   public async GetDriveItems(driveId: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
       const items = await this.client.api(`/drives/${driveId}/root/children`)
@@ -220,7 +244,7 @@ class M365Wrapper {
     }
   }
 
-  public async GetTeamDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
+  public async GetTeamDefaultDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
       var items = null;
 

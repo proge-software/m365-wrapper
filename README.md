@@ -144,6 +144,18 @@ Enumerate OneDrive resources available to the logged user (Output type: collecti
 const myDrives = await organizationsClient.GetMyDrives();
 ```
 
+Enumerate OneDrive resources available to the team group (Output type: collection of MicrosoftGraph.Drive).
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+const driveItems = await organizationsClient.GetTeamDrives(teamGroupId);
+```
+
+Enumerate the Drives (document libraries) under the given SharePoint site (Output type: collection of MicrosoftGraph.Drive).
+```
+var siteIdOrName = "<siteIdOrName>";        // A valid sharepoint site name or id (required; site name example: contoso.sharepoint.com).
+const driveItems = await organizationsClient.GetSiteDrives(siteIdOrName);
+```
+
 Enumerate the DriveItem resources in the root of a specific OneDrive resource (Output type: collection of MicrosoftGraph.DriveItem).
 ```
 var driveId = "<driveId>";      // A valid drive unique id (required).
@@ -161,7 +173,7 @@ Access a Teams group default document library and get the list of the children o
 ```
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 var relPath = "/General/MySpecificFolder";                      // Optional. Relative path (the slash ("/") at the beginning and/or at the end can be specified or omitted).
-const driveItemContentList = await organizationsClient.GetTeamDriveItems(teamGroupId, relPath);
+const driveItemContentList = await organizationsClient.GetTeamDefaultDriveItems(teamGroupId, relPath);
 ``` 
 
 Get data of the specified team (Output type: MicrosoftGraph.Team).
