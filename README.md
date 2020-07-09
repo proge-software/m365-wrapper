@@ -42,7 +42,7 @@ const authResponse = await organizationsClient.loginPopup();
 
 Evaluate if the user has already logged and acquire token silently
 ```
-await z.StatLoginPopupProcess();
+await organizationsClient.StatLoginPopupProcess();
 ``` 
 
 Logout (with account choice)
