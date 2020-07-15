@@ -196,6 +196,18 @@ class M365Wrapper {
     }
   }
 
+  public async GetMyDriveItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      const items = await this.client.api(`/me/drive/root/search(q='${queryText}')`) 
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
   public async GetTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
     try {
       const items = await this.client.api(`/groups/${teamGroupId}/drives`)
@@ -220,6 +232,18 @@ class M365Wrapper {
     }
   }
 
+  public async GetSiteDriveItemsByQuery(siteIdOrName: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      const items = await this.client.api(`/sites/${siteIdOrName}/drive/root/search(q='${queryText}')`) 
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+  
   public async GetDriveItems(driveId: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
       const items = await this.client.api(`/drives/${driveId}/root/children`)
@@ -231,6 +255,18 @@ class M365Wrapper {
       throw error;
     }
   }
+
+  public async GetDriveItemsByQuery(driveId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      const items = await this.client.api(`/drives/${driveId}/root/search(q='${queryText}')`) 
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }  
 
   public async GetDriveFolderItems(driveId: string, folderId: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
@@ -262,6 +298,18 @@ class M365Wrapper {
         items = await this.client.api(`/groups/${teamGroupId}/drive/root/children`)
         .get();
       }
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetTeamDriveItemsByQuery(teamGroupId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      const items = await this.client.api(`/groups/${teamGroupId}/drive/root/search(q='${queryText}')`) 
+        .get();
       
       return items;
     }

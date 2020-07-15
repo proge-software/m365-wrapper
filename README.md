@@ -191,6 +191,13 @@ Enumerate OneDrive resources available to the logged user (output type: collecti
 const myDrives = await organizationsClient.GetMyDrives();
 ```
 
+Search, within the drive of the logged user, the hierarchy of items for items matching a query (output type: collection of MicrosoftGraph.DriveItem)
+```
+var searchText = "<Text to search>";    // Optional. The query text used to search for items. Values may be matched
+                                        // across several fields including filename, metadata, and file content.
+const driveItems = await organizationsClient.GetMyDriveItemsByQuery(searchText);
+```
+
 Enumerate OneDrive resources available to the team group (output type: collection of MicrosoftGraph.Drive)
 ```
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
@@ -203,10 +210,26 @@ var siteIdOrName = "<siteIdOrName>";        // A valid sharepoint site name or i
 const driveItems = await organizationsClient.GetSiteDrives(siteIdOrName);
 ```
 
+Search, within the drive of the given SharePoint site, the hierarchy of items for items matching a query (output type: collection of MicrosoftGraph.DriveItem)
+```
+var siteIdOrName = "<siteIdOrName>";    // A valid sharepoint site name or id (required; site name example: contoso.sharepoint.com).
+var searchText = "<Text to search>";    // Optional. The query text used to search for items. Values may be matched
+                                        // across several fields including filename, metadata, and file content.
+const driveItems = await organizationsClient.GetSiteDriveItemsByQuery(siteIdOrName, searchText);
+```
+
 Enumerate the DriveItem resources in the root of a specific OneDrive resource (output type: collection of MicrosoftGraph.DriveItem)
 ```
 var driveId = "<driveId>";      // A valid drive unique id (required).
 const driveItems = await organizationsClient.GetDriveItems(driveId);
+```
+
+Search, within the given OneDrive resource, the hierarchy of items for items matching a query (output type: collection of MicrosoftGraph.DriveItem)
+```
+var driveId = "<driveId>";              // A valid drive unique id (required).
+var searchText = "<Text to search>";    // Optional. The query text used to search for items. Values may be matched
+                                        // across several fields including filename, metadata, and file content.
+const driveItems = await organizationsClient.GetDriveItemsByQuery(driveId, searchText);
 ```
 
 Enumerate the DriveItems resources in the folder of a specific OneDrive resource (output type: collection of MicrosoftGraph.DriveItem)
@@ -222,3 +245,11 @@ var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams
 var relPath = "/General/MySpecificFolder";                      // Optional. Relative path (the slash ("/") at the beginning and/or at the end can be specified or omitted).
 const driveItemContentList = await organizationsClient.GetTeamDefaultDriveItems(teamGroupId, relPath);
 ``` 
+
+Search, within the given Teams group, the hierarchy of items for items matching a query (output type: collection of MicrosoftGraph.DriveItem)
+```
+var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
+var searchText = "<Text to search>";                            // Optional. The query text used to search for items. Values may be matched
+                                                                // across several fields including filename, metadata, and file content.
+const driveItems = await organizationsClient.GetTeamDriveItemsByQuery(teamGroupId, searchText);
+```
