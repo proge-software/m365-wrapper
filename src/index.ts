@@ -208,6 +208,30 @@ class M365Wrapper {
     }
   }
 
+  public async GetMyDriveAndSharedItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      const items = await this.client.api(`/me/drive/search(q='${queryText}')`) 
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetMySharedItems(): Promise<[MicrosoftGraph.DriveItem]> {
+    try {
+      const items = await this.client.api(`/me/drive/sharedWithMe`) 
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
   public async GetTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
     try {
       const items = await this.client.api(`/groups/${teamGroupId}/drives`)
@@ -271,6 +295,18 @@ class M365Wrapper {
   public async GetDriveFolderItems(driveId: string, folderId: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
       const items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`) 
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetDriveItem(driveId: string, itemId: string): Promise<MicrosoftGraph.DriveItem> {
+    try {
+      const items = await this.client.api(`/drives/${driveId}/items/${itemId}`) 
         .get();
       
       return items;
