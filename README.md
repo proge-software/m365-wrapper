@@ -198,6 +198,26 @@ var searchText = "<Text to search>";    // Optional. The query text used to sear
 const driveItems = await organizationsClient.GetMyDriveItemsByQuery(searchText);
 ```
 
+Get DriveItems searching for items within both logged user drive and items shared with him (output type: collection of MicrosoftGraph.DriveItem)
+```
+var searchText = "<Text to search>";    // Optional. The query text used to search for items. Values may be matched
+                                        // across several fields including filename, metadata, and file content.
+const driveItems = await organizationsClient.GetMyDriveAndSharedItemsByQuery(searchText);
+```
+
+Retrieve a collection of DriveItem resources that have been shared with the logged user (output type: collection of MicrosoftGraph.DriveItem)
+```
+const driveItems = await organizationsClient.GetMySharedItems();
+```
+
+Get a DriveItem resource (also a shared one). To access a shared DriveItem resource, the request can be made using the 
+parameters provided in 'remoteItem' facet returned by the GetMySharedItems() method (output type: MicrosoftGraph.DriveItem)
+```
+var driveId = "<driveId>";  // A valid drive unique id (required).
+var itemId = "<itemId>";    // A valid DriveItem id (required).
+const item = await organizationsClient.GetDriveItem(driveId, itemId);
+```
+
 Enumerate OneDrive resources available to the team group (output type: collection of MicrosoftGraph.Drive)
 ```
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
