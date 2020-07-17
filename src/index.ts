@@ -184,6 +184,18 @@ class M365Wrapper {
     return res;
   }
 
+  public async UpdateOutlookCalendarEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {    
+    try {
+      let res: MicrosoftGraph.Event = await this.client.api(`/me/events/${eventId}`)
+        .patch(newAtteendees);
+  
+      return res;
+      }
+    catch (error) {
+      throw error;
+    }
+  }
+
   public async GetMyDrives(): Promise<[MicrosoftGraph.Drive]> {
     try {
       const items = await this.client.api("/me/drives")
