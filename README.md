@@ -180,8 +180,32 @@ var outlCalEvent = {
     importance: "normal",       // Optional. Importance of the event. Possible values are: low, normal, high. Default is normal.
     isAllDay: "false"           // Optional. Set to true if the event lasts all day. If true, regardless of whether it's a single-day or multi-day event, start 
                                 // and end time must be set to midnight (period must be at least 24 hours long) and be in the same time zone. Default is false.    
-}
+};
 const outCalEvent = await organizationsClient.CreateOutlookCalendarEvent(outlCalEvent);
+``` 
+
+Update outlook calendar event attendees (output type: MicrosoftGraph.Event)
+```
+var eventId = "<eventId>";                          // A valid outlook calendar event id (required).
+var newAtteendees = {
+    attendees: [                                    // Fill with all attendees needed for the event, followed by a comma exept the last one
+        {
+            emailAddress: {
+                address: "name1@mydomain.com",
+                name: "Name Surmane"
+            },
+            type: "required"                        // Possible admitted values are required, optional, resource.
+        },
+        {
+            emailAddress: {
+                address: "name2@mydomain.com",
+                name: "Name Surname"
+            },
+            type: "optional"                        // Possible admitted values are required, optional, resource.
+        }
+    ]
+};
+const outCalEvent = await organizationsClient.UpdateOutlookCalendarEventAttendees(eventId, newAtteendees);
 ``` 
 
 ### One drive
