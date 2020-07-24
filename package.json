@@ -39,6 +39,7 @@
     "shx": "^0.3.2",
     "terser-webpack-plugin": "^3.0.7",
     "ts-jest": "^25.5.1",
+    "ts-loader": "^8.0.1",
     "tsify": "^4.0.2",
     "typescript": "^3.9.7",
     "webpack": "^4.43.0",
