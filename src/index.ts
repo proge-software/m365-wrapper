@@ -178,7 +178,6 @@ class M365Wrapper {
     //POST /users/{id | userPrincipalName}/calendar/events   <<< Da provare
 
     let res: [MicrosoftGraph.Event] = await this.client.api('/me/events')
-      .version('beta')
       .post(userEvent);
 
     return res;

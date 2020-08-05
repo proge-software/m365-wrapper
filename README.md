@@ -16,7 +16,7 @@
 
 ## What To Expect From This Library
 
-This library is focused on wrapping Microsoft 365 API call merging togheder authentication features and Graph API call.
+This library is focused on wrapping Microsoft 365 API call merging together authentication features and Graph API call.
 Authentication feature is driven by MSAL official library which this package depends on.
 
 ## OAuth 2.0 and the Implicit Flow
