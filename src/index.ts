@@ -365,6 +365,18 @@ class M365Wrapper {
     }
   }
 
+  public async GetMyDriveItemSharingPermissions(itemId: string): Promise<[MicrosoftGraph.Permission]> {
+    try {
+      const items = await this.client.api(`/me/drive/items/${itemId}/permissions`)
+        .get();
+      
+      return items;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
   public async GetTeam(teamId: string): Promise<MicrosoftGraph.Team> {
     try {
       const retTeam = await this.client.api(`/teams/${teamId}`)

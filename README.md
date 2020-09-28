@@ -297,3 +297,10 @@ var searchText = "<Text to search>";                            // Optional. The
                                                                 // across several fields including filename, metadata, and file content.
 const driveItems = await organizationsClient.GetTeamDriveItemsByQuery(teamGroupId, searchText);
 ```
+
+Get the list of the effective sharing permissions on a driveItem (among the ones of the driveItems of the currently logged in user).
+(output type: MicrosoftGraph.Permission)
+```
+var itemId = "<itemId>";    // Valid id of a driveItem of the currently logged in user (required).
+const item = await organizationsClient.GetMyDriveItemSharingPermissions(itemId);
+```
