@@ -159,13 +159,48 @@ class M365Wrapper {
     try {
 
       var bFound = false;
+      var teamsSkuPartNumbers: string[] = ['ENTERPRISEPACK_FACULTY', 
+      'STANDARDWOFFPACK_FACULTY', 
+      'STANDARDWOFFPACK_IW_FACULTY', 
+      'ENTERPRISEPREMIUM_FACULTY', 
+      'ENTERPRISEPREMIUM_NOPSTNCONF_FACULTY', 
+      'STANDARDPACK_FACULTY', 
+      'ENTERPRISEPACK_EDULRG', 
+      'ENTERPRISEWITHSCAL_FACULTY', 
+      'M365EDU_A3_FACULTY', 
+      'M365EDU_A5_FACULTY', 
+      'M365EDU_A5_NOPSTNCONF_FACULTY', 
+      'STANDARDWOFFPACK_HOMESCHOOL_FAC', 
+      'STANDARDWOFFPACK_FACULTY_DEVICE', 
+      'ENTERPRISEPACK_STUDENT', 
+      'STANDARDWOFFPACK_IW_STUDENT', 
+      'ENTERPRISEPREMIUM_STUDENT', 
+      'ENTERPRISEPREMIUM_NOPSTNCONF_STUDENT', 
+      'STANDARDPACK_STUDENT', 
+      'ENTERPRISEWITHSCAL_STUDENT', 
+      'M365EDU_A3_STUDENT', 
+      'M365EDU_A3_STUUSEBNFT', 
+      'M365EDU_A5_STUDENT', 
+      'M365EDU_A5_STUUSEBNFT', 
+      'M365EDU_A5_NOPSTNCONF_STUDENT', 
+      'M365EDU_A5_NOPSTNCONF_STUUSEBNFT', 
+      'ENTERPRISEPACKPLUS_STUDENT', 
+      'ENTERPRISEPACKPLUS_STUUSEBNFT', 
+      'ENTERPRISEPREMIUM_STUUSEBNFT', 
+      'ENTERPRISEPREMIUM_NOPSTNCONF_STUUSEBNFT', 
+      'STANDARDWOFFPACK_HOMESCHOOL_STU', 
+      'STANDARDWOFFPACK_STUDENT_DEVICE', 
+      'STANDARDWOFFPACK_IW_STUDENT'] 
 
       const licenses = await this.client.api(`/me/licenseDetails`)
         .get();
       
-        // bFound = licenses.value.find(a => a.skuPartNumber == 'STANDARDWOFFPACK_FACULTY');
-
-        bFound = licenses.value.includes(a => a.skuPartNumber == 'STANDARDWOFFPACK_FACULTY');
+        for (var i = 0; i < licenses.value.length; i++) {
+          if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
+            bFound = true;
+            break;
+          }
+        }
 
       return bFound;
     }

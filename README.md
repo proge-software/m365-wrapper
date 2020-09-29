@@ -80,6 +80,11 @@ const myOrgUsers = await organizationsClient.GetUsers();
 
 ### Teams info
 
+Determines whether the currently logged in user's licenses include Microsoft Teams (output type: boolean)
+```
+const isTeamsInMyLicenses = await organizationsClient.IsTeamsInMyLicenses();
+``` 
+
 Get data of the specified team (output type: MicrosoftGraph.Team)
 ```
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
