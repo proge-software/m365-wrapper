@@ -9,10 +9,11 @@ import UserSearchRequest from "./Types/UserSearchRequest";
 
 class M365Wrapper {
   protected authPar: AuthenticationParameters = {
-    scopes: ['User.Read', 'User.ReadBasic.All', 
-      'Calendars.ReadWrite', 'Calendars.Read.Shared',
-      'email', 'Team.ReadBasic.All',  'OnlineMeetings.ReadWrite', 
-      'Files.Read.All', 'Group.Read.All', 'Reports.Read.All'],
+    scopes: ['Calendars.ReadWrite', 'Calendars.Read.Shared',
+      'Directory.AccessAsUser.All', 'Directory.Read.All', 'Directory.ReadWrite.All', 'email', 
+      'Files.Read.All', 'Group.Read.All', 
+      'OnlineMeetings.ReadWrite', 'Reports.Read.All', 
+      'Team.ReadBasic.All', 'User.Read', 'User.Read.All', 'User.ReadBasic.All', 'User.ReadWrite.All' ],
     prompt: 'select_account',
   };
   protected configuration: Configuration = {
@@ -154,6 +155,60 @@ class M365Wrapper {
     return res;
   }
 
+  public async IsTeamsInMyLicenses(): Promise<boolean> {
+    try {
+
+      var bFound = false;
+      var teamsSkuPartNumbers: string[] = ['ENTERPRISEPACK_FACULTY', 
+      'STANDARDWOFFPACK_FACULTY', 
+      'STANDARDWOFFPACK_IW_FACULTY', 
+      'ENTERPRISEPREMIUM_FACULTY', 
+      'ENTERPRISEPREMIUM_NOPSTNCONF_FACULTY', 
+      'STANDARDPACK_FACULTY', 
+      'ENTERPRISEPACK_EDULRG', 
+      'ENTERPRISEWITHSCAL_FACULTY', 
+      'M365EDU_A3_FACULTY', 
+      'M365EDU_A5_FACULTY', 
+      'M365EDU_A5_NOPSTNCONF_FACULTY', 
+      'STANDARDWOFFPACK_HOMESCHOOL_FAC', 
+      'STANDARDWOFFPACK_FACULTY_DEVICE', 
+      'ENTERPRISEPACK_STUDENT', 
+      'STANDARDWOFFPACK_IW_STUDENT', 
+      'ENTERPRISEPREMIUM_STUDENT', 
+      'ENTERPRISEPREMIUM_NOPSTNCONF_STUDENT', 
+      'STANDARDPACK_STUDENT', 
+      'ENTERPRISEWITHSCAL_STUDENT', 
+      'M365EDU_A3_STUDENT', 
+      'M365EDU_A3_STUUSEBNFT', 
+      'M365EDU_A5_STUDENT', 
+      'M365EDU_A5_STUUSEBNFT', 
+      'M365EDU_A5_NOPSTNCONF_STUDENT', 
+      'M365EDU_A5_NOPSTNCONF_STUUSEBNFT', 
+      'ENTERPRISEPACKPLUS_STUDENT', 
+      'ENTERPRISEPACKPLUS_STUUSEBNFT', 
+      'ENTERPRISEPREMIUM_STUUSEBNFT', 
+      'ENTERPRISEPREMIUM_NOPSTNCONF_STUUSEBNFT', 
+      'STANDARDWOFFPACK_HOMESCHOOL_STU', 
+      'STANDARDWOFFPACK_STUDENT_DEVICE', 
+      'STANDARDWOFFPACK_IW_STUDENT'] 
+
+      const licenses = await this.client.api(`/me/licenseDetails`)
+        .get();
+      
+        for (var i = 0; i < licenses.value.length; i++) {
+          if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
+            bFound = true;
+            break;
+          }
+        }
+
+      return bFound;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+  
   public async GetMyJoinedTeams(): Promise<[MicrosoftGraph.Team]> {
     try {
       const teams = await this.client.api("/me/joinedTeams")
