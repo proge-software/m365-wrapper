@@ -78,6 +78,16 @@ Get users from your organization (output type: collection of MicrosoftGraph.User
 const myOrgUsers = await organizationsClient.GetUsers();
 ``` 
 
+Determines whether the currently logged in user's licenses include Microsoft OneDrive (output type: boolean)
+```
+const isOneDriveInMyLicenses = await organizationsClient.IsOneDriveInMyLicenses();
+``` 
+
+Determines whether the currently logged in user's licenses include Microsoft Office and related products (output type: boolean)
+```
+const isOfficeInMyLicenses = await organizationsClient.IsOfficeInMyLicenses();
+``` 
+
 ### Teams info
 
 Determines whether the currently logged in user's licenses include Microsoft Teams (output type: boolean)

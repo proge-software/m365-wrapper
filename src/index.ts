@@ -192,15 +192,22 @@ class M365Wrapper {
       'STANDARDWOFFPACK_STUDENT_DEVICE', 
       'STANDARDWOFFPACK_IW_STUDENT'] 
 
-      const licenses = await this.client.api(`/me/licenseDetails`)
-        .get();
+      var licenses;
+      try 
+      {
+        licenses = await this.client.api(`/me/licenseDetails`)
+        .get();        
+      } catch (error) 
+      {
+        return false;
+      }
       
-        for (var i = 0; i < licenses.value.length; i++) {
-          if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
-            bFound = true;
-            break;
-          }
+      for (var i = 0; i < licenses.value.length; i++) {
+        if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
+          bFound = true;
+          break;
         }
+      }
 
       return bFound;
     }
@@ -209,6 +216,109 @@ class M365Wrapper {
     }
   }
   
+  public async IsOneDriveInMyLicenses(): Promise<boolean> {
+    try {
+
+      var bFound = false;
+      var teamsSkuPartNumbers: string[] = ['O365_BUSINESS', 
+      'SMB_BUSINESS', 
+      'OFFICESUBSCRIPTION', 
+      'WACONEDRIVESTANDARD', 
+      'WACONEDRIVEENTERPRISE', 
+      'VISIOONLINE_PLAN1', 
+      'VISIOCLIENT'] 
+
+      var licenses;
+      try 
+      {
+        licenses = await this.client.api(`/me/licenseDetails`)
+        .get();        
+      } catch (error) 
+      {
+        return false;
+      }
+      
+      for (var i = 0; i < licenses.value.length; i++) {
+        if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
+          bFound = true;
+          break;
+        }
+      }
+
+      if (!bFound)
+      {
+        bFound = await this.IsOfficeInMyLicenses();
+      }
+
+      return bFound;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+  public async IsOfficeInMyLicenses(): Promise<boolean> {
+    try {
+
+      var bFound = false;
+      var teamsSkuPartNumbers: string[] = ['M365EDU_A3_FACULTY', 
+      'M365EDU_A3_STUDENT', 
+      'M365EDU_A5_FACULTY', 
+      'M365EDU_A5_STUDENT', 
+      'O365_BUSINESS', 
+      'SMB_BUSINESS', 
+      'OFFICESUBSCRIPTION', 
+      'O365_BUSINESS_ESSENTIALS', // Mobile
+      'SMB_BUSINESS_ESSENTIALS', // Mobile
+      'O365_BUSINESS_PREMIUM', 
+      'SMB_BUSINESS_PREMIUM', 
+      'SPB', 
+      'SPE_E3', 
+      'SPE_E5', 
+      'SPE_E3_USGOV_DOD', 
+      'SPE_E3_USGOV_GCCHIGH', 
+      'SPE_F1', // Mobile
+      'ENTERPRISEPREMIUM_FACULTY', 
+      'ENTERPRISEPREMIUM_STUDENT', 
+      'STANDARDPACK', // Mobile
+      'ENTERPRISEPACK', 
+      'DEVELOPERPACK', 
+      'ENTERPRISEPACK_USGOV_DOD', 
+      'ENTERPRISEPACK_USGOV_GCCHIGH', 
+      'ENTERPRISEWITHSCAL', 
+      'ENTERPRISEPREMIUM', 
+      'ENTERPRISEPREMIUM_NOPSTNCONF', 
+      'DESKLESSPACK', // Mobile
+      'MIDSIZEPACK', 
+      'LITEPACK_P2'] 
+
+      var licenses;
+      try 
+      {
+        licenses = await this.client.api(`/me/licenseDetails`)
+        .get();        
+      } catch (error) 
+      {
+        return false;
+      }
+      
+      for (var i = 0; i < licenses.value.length; i++) {
+        if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
+          bFound = true;
+          break;
+        }
+      }
+
+      return bFound;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+
+
+
   public async GetMyJoinedTeams(): Promise<[MicrosoftGraph.Team]> {
     try {
       const teams = await this.client.api("/me/joinedTeams")
