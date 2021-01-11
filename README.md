@@ -171,6 +171,7 @@ var outlCalEvent = {
                 name: "Name Surmane"
             },
             type: "required"                        // Possible admitted values are required, optional, resource.
+                                                    // Specify "resource" to hide all other attendees in the notification email recipients.
         },
         {
             emailAddress: {
@@ -178,6 +179,7 @@ var outlCalEvent = {
                 name: "Name Surname"
             },
             type: "optional"                        // Possible admitted values are required, optional, resource.
+                                                    // Specify "resource" to hide all other attendees in the notification email recipients.
         }
     ],
     allowNewTimeProposals: true,                // Optional. True if the meeting organizer allows invitees to propose a new time when responding, false otherwise. Default is true.
@@ -210,6 +212,7 @@ var newAtteendees = {
                 name: "Name Surmane"
             },
             type: "required"                        // Possible admitted values are required, optional, resource.
+                                                    // Specify "resource" to hide all other attendees in the notification email recipients.
         },
         {
             emailAddress: {
@@ -217,6 +220,7 @@ var newAtteendees = {
                 name: "Name Surname"
             },
             type: "optional"                        // Possible admitted values are required, optional, resource.
+                                                    // Specify "resource" to hide all other attendees in the notification email recipients.
         }
     ]
 };
