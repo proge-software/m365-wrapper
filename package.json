@@ -46,9 +46,9 @@
     "webpack-cli": "3.3.12"
   },
   "dependencies": {
-    "@microsoft/microsoft-graph-client": "^2.2.1",
-    "@microsoft/microsoft-graph-types": "1.27.0",
-    "isomorphic-fetch": "3.0.0",
-    "msal": "^1.4.4"
+    "@azure/msal-browser": "^2.25.0",
+    "@microsoft/microsoft-graph-client": "^3.0.2",
+    "@microsoft/microsoft-graph-types": "^2.20.0",
+    "isomorphic-fetch": "^3.0.0"
   }
 }

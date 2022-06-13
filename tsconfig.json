@@ -9,7 +9,7 @@
     "sourceMap": true,
     "target": "es5",
     //"moduleResolution": "node",
-    "declaration": true,
+    "declaration": true
   }
   ,"include": [
     "src/**/*.ts"
