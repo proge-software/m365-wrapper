@@ -3,9 +3,9 @@ import { PublicClientApplication, Configuration, AuthenticationResult, PopupRequ
 import { Client, ClientOptions, AuthenticationProvider } from '@microsoft/microsoft-graph-client';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import { AuthCodeMSALBrowserAuthenticationProvider, AuthCodeMSALBrowserAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser";
-import UserSearchRequest from "./models/requests/user-search-request";
 import PopupRequestConstants from "./constants/popup-request-constants";
 import UserHandler from "./handlers/user-handler";
+import UsersHandler from "./handlers/users-handler";
 
 class M365Wrapper {
 
@@ -32,6 +32,7 @@ class M365Wrapper {
   protected client: Client;
 
   public user: UserHandler;
+  public users: UsersHandler;
 
   constructor(clientId: string);
   constructor(clientId: string, authority?: string) {
@@ -52,6 +53,7 @@ class M365Wrapper {
     this.client = Client.initWithMiddleware(this.options);
 
     this.user = new UserHandler(this.msalApplication, this.client);
+    this.users = new UsersHandler(this.client);
   }
 
   public async GetMyEvents(): Promise<[MicrosoftGraph.Event]> {
