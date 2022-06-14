@@ -4,19 +4,17 @@ import { Client, ClientOptions, AuthenticationProvider } from '@microsoft/micros
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import { AuthCodeMSALBrowserAuthenticationProvider, AuthCodeMSALBrowserAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser";
 import UserSearchRequest from "./models/requests/user-search-request";
+import PopupRequestConstants from "./constants/popup-request-constants";
+import UserHandler from "./handlers/user-handler";
 
 class M365Wrapper {
 
-  protected authPar: PopupRequest = {
-    scopes: ['Calendars.ReadWrite', 'Calendars.Read.Shared',
-      'Directory.AccessAsUser.All', 'Directory.Read.All', 'Directory.ReadWrite.All', 'email',
-      'Files.Read.All', 'Group.Read.All',
-      'OnlineMeetings.ReadWrite', 'Reports.Read.All',
-      'Team.ReadBasic.All', 'User.Read', 'User.Read.All', 'User.ReadBasic.All', 'User.ReadWrite.All'],
-    prompt: 'select_account',
+  private readonly authPar: PopupRequest = {
+    scopes: PopupRequestConstants.DEFAULT_SCOPES,
+    prompt: PopupRequestConstants.PROMPT_SELECT_ACCOUNT
   };
 
-  protected configuration: Configuration = {
+  private readonly configuration: Configuration = {
     auth: {
       clientId: '',
       authority: 'https://login.microsoftonline.com/organizations',
@@ -32,6 +30,8 @@ class M365Wrapper {
   protected authProvider: AuthenticationProvider;
   protected options: ClientOptions;
   protected client: Client;
+
+  public user: UserHandler;
 
   constructor(clientId: string);
   constructor(clientId: string, authority?: string) {
@@ -50,83 +50,8 @@ class M365Wrapper {
     };
 
     this.client = Client.initWithMiddleware(this.options);
-  }
 
-  public async loginPopup(): Promise<AuthenticationResult> {
-    let loginResult = await this.msalApplication.loginPopup(this.authPar);
-    this.msalApplication.setActiveAccount(loginResult.account);
-    return loginResult;
-  }
-
-  public async acquireTokenSilent(): Promise<AuthenticationResult> {
-    return await this.msalApplication.acquireTokenSilent(this.authPar);
-  }
-
-  public async acquireTokenPopup(): Promise<AuthenticationResult> {
-    return await this.msalApplication.acquireTokenPopup(this.authPar);
-  }
-
-  public async StatLoginPopupProcess() {
-    let account = this.getAccount();
-    if (account) {
-      await this.acquireTokenSilent().then(async response => {
-        //const account = thatMsal.getAccount();
-        // this.SET_ACCOUNT(account);
-        // this.SET_ID_TOKEN(response);
-        // this.SET_LOGIN_STATE(true);       
-      }).catch(async error => {
-        if (error.errorMessage.indexOf("interaction_required") !== -1) {
-          await this.acquireTokenPopup()
-            .then(async response => {
-              const account = this.getAccount();
-              // this.SET_ACCOUNT(account);
-              // this.SET_ID_TOKEN(response);
-              // this.SET_LOGIN_STATE(true);              
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        }
-        else
-          console.log(error);
-      })
-    }
-    else {
-      await this.loginPopup()
-        .then(async response => {
-          await this.acquireTokenSilent().then(async response => {
-            account = this.getAccount();
-            // this.SET_ACCOUNT(account);
-            // this.SET_ID_TOKEN(response);
-            // this.SET_LOGIN_STATE(true);            
-          })
-            .catch(err => {
-              console.log(err);
-            });
-        })
-        .catch(err => {
-          console.log(err);
-        });
-
-    }
-  }
-
-  public getAccount(): AccountInfo {
-    return this.msalApplication.getActiveAccount();
-  }
-
-  public logout() {
-    this.msalApplication.logoutPopup(this.authPar);
-  }
-
-  public async GetMyDetails(): Promise<MicrosoftGraph.User> {
-    try {
-      const userDetails: MicrosoftGraph.User = await this.client.api("/me")
-        .get();
-      return userDetails;
-    } catch (error) {
-      throw error;
-    }
+    this.user = new UserHandler(this.msalApplication, this.client);
   }
 
   public async GetMyEvents(): Promise<[MicrosoftGraph.Event]> {
@@ -138,19 +63,6 @@ class M365Wrapper {
     } catch (error) {
       throw error;
     }
-  }
-
-  public async GetUsers(UserSearchRequest: UserSearchRequest): Promise<MicrosoftGraph.User[]> {
-    let query = this.client.api('/users');
-
-    if (UserSearchRequest && UserSearchRequest.issuer && UserSearchRequest.mail) {
-      query = query.filter(`identities/any(c:c/issuerAssignedId eq '${UserSearchRequest.mail}' and c/issuer eq '${UserSearchRequest.issuer}')`);
-    }
-
-    let res: MicrosoftGraph.User[] = await query.select('displayName,givenName,postalCode,mail,surname,userPrincipalName')
-      .get();
-
-    return res;
   }
 
   public async IsTeamsInMyLicenses(): Promise<boolean> {
