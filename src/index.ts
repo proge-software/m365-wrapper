@@ -472,17 +472,6 @@ class M365Wrapper {
       throw error;
     }
   }
-  
-  public async GetUserByIdOrEmail(userIdOrEmail: string): Promise<[MicrosoftGraph.User]> {
-    try {
-      const retUser = await this.client.api(`/users/${userIdOrEmail}`)
-        .get();
-      return retUser;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
 
   // GetMyApplications: Permissions problems (output 403: Forbidden)
   public async GetMyApplications(): Promise<any> {

@@ -18,4 +18,15 @@ export default class UsersHandler {
 
         return res;
     }
+
+    public async GetUserByIdOrEmail(userIdOrEmail: string): Promise<[MicrosoftGraph.User]> {
+        try {
+            const retUser = await this.client.api(`/users/${userIdOrEmail}`)
+                .get();
+            return retUser;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 }
