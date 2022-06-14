@@ -29,4 +29,16 @@ export default class UsersHandler {
             throw error;
         }
     }
+
+    // Not working (nb: beta)
+    // public async GetUserPresence(userId: string): Promise<any> {
+    //   try {
+    //     const members = await this.client.api("/beta/users/" + userId + "/presence")
+    //       .get();
+    //     return members;
+    //   }
+    //   catch (error) {
+    //     throw error;
+    //   }
+    // }
 }

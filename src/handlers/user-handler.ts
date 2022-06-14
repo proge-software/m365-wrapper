@@ -82,4 +82,18 @@ export default class UserHandler {
     public async GetMyDetails(): Promise<MicrosoftGraph.User> {
         return (await this.client.api("/me").get()) as MicrosoftGraph.User;
     }
+
+    // GetMyApplications: Permissions problems (output 403: Forbidden)
+    public async GetMyApplications(): Promise<any> {
+        try {
+            // const retReport = await this.client.api("/reports/getOffice365ActivationsUserDetail(period='D7')")
+            // const retReport = await this.client.api("/reports/getOffice365ActivationsUserDetail")
+            const retReport = await this.client.api("/reports/getOffice365ActiveUserDetail(period='D7')")
+                .get();
+            return retReport;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 }

@@ -71,32 +71,6 @@ class M365Wrapper {
     this.sites = new SitesHandler(this.client);
   }
 
-  // GetMyApplications: Permissions problems (output 403: Forbidden)
-  public async GetMyApplications(): Promise<any> {
-    try {
-      // const retReport = await this.client.api("/reports/getOffice365ActivationsUserDetail(period='D7')")
-      // const retReport = await this.client.api("/reports/getOffice365ActivationsUserDetail")
-      const retReport = await this.client.api("/reports/getOffice365ActiveUserDetail(period='D7')")
-        .get();
-      return retReport;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  // Not working (nb: beta)
-  // public async GetUserPresence(userId: string): Promise<any> {
-  //   try {
-  //     const members = await this.client.api("/beta/users/" + userId + "/presence")
-  //       .get();
-  //     return members;
-  //   }
-  //   catch (error) {
-  //     throw error;
-  //   }
-  // }
-
 }
 
 export = M365Wrapper;
