@@ -1,9 +1,9 @@
 import "isomorphic-fetch";
-import { PublicClientApplication, Configuration, AuthenticationResult, PopupRequest, AccountInfo } from '@azure/msal-browser';
-import { Client, ClientOptions, AuthenticationProvider } from '@microsoft/microsoft-graph-client';
-import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import { PublicClientApplication, Configuration, PopupRequest } from '@azure/msal-browser';
+import { Client } from '@microsoft/microsoft-graph-client';
 import { AuthCodeMSALBrowserAuthenticationProvider, AuthCodeMSALBrowserAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser";
 import PopupRequestConstants from "./constants/popup-request-constants";
+import ConfigurationsConstants from "./constants/configurations-constants";
 import UserHandler from "./handlers/user-handler";
 import UsersHandler from "./handlers/users-handler";
 import CalendarHandler from "./handlers/calendar-handler";
@@ -13,28 +13,6 @@ import DriveHandler from "./handlers/drive-handler";
 import SitesHandler from "./handlers/sites-handler";
 
 class M365Wrapper {
-
-  private readonly authPar: PopupRequest = {
-    scopes: PopupRequestConstants.DEFAULT_SCOPES,
-    prompt: PopupRequestConstants.PROMPT_SELECT_ACCOUNT
-  };
-
-  private readonly configuration: Configuration = {
-    auth: {
-      clientId: '',
-      authority: 'https://login.microsoftonline.com/organizations',
-    },
-    cache: {
-      cacheLocation: 'sessionStorage'
-    }
-  };
-
-  protected GraphScopes: string[] = [...this.authPar.scopes!];
-  protected providerOptions: AuthCodeMSALBrowserAuthenticationProviderOptions;
-  protected msalApplication: PublicClientApplication;
-  protected authProvider: AuthenticationProvider;
-  protected options: ClientOptions;
-  protected client: Client;
 
   public office: OfficeHandler;
   public user: UserHandler;
@@ -46,29 +24,37 @@ class M365Wrapper {
 
   constructor(clientId: string);
   constructor(clientId: string, authority?: string) {
-    if (clientId)
-      this.configuration.auth.clientId = clientId;
 
-    if (authority)
-      this.configuration.auth.authority = authority;
-
-    this.msalApplication = new PublicClientApplication(this.configuration);
-    this.providerOptions = this.authPar as AuthCodeMSALBrowserAuthenticationProviderOptions;
-    this.authProvider = new AuthCodeMSALBrowserAuthenticationProvider(this.msalApplication, this.providerOptions);
-
-    this.options = {
-      authProvider: this.authProvider
+    let configuration: Configuration = {
+      auth: {
+        clientId: clientId ? clientId : '',
+        authority: authority? authority : ConfigurationsConstants.DEFAULT_AUTHORITY,
+      },
+      cache: {
+        cacheLocation: ConfigurationsConstants.CACHE_LOCATION_SESSION_STORAGE
+      }
     };
 
-    this.client = Client.initWithMiddleware(this.options);
+    let popupRequest: PopupRequest = {
+      scopes: PopupRequestConstants.DEFAULT_SCOPES,
+      prompt: PopupRequestConstants.PROMPT_SELECT_ACCOUNT
+    };
 
-    this.office = new OfficeHandler(this.client);
-    this.user = new UserHandler(this.msalApplication, this.client);
-    this.users = new UsersHandler(this.client);
-    this.calendar = new CalendarHandler(this.client);
-    this.teams = new TeamsHandler(this.client);
-    this.drive = new DriveHandler(this.client, this.office);
-    this.sites = new SitesHandler(this.client);
+    let msalApplication = new PublicClientApplication(configuration);
+    let providerOptions = popupRequest as AuthCodeMSALBrowserAuthenticationProviderOptions;
+    let authProvider = new AuthCodeMSALBrowserAuthenticationProvider(msalApplication, providerOptions);
+
+    let client = Client.initWithMiddleware({
+      authProvider: authProvider
+    });
+
+    this.office = new OfficeHandler(client);
+    this.user = new UserHandler(msalApplication, client);
+    this.users = new UsersHandler(client);
+    this.calendar = new CalendarHandler(client);
+    this.teams = new TeamsHandler(client);
+    this.drive = new DriveHandler(client, this.office);
+    this.sites = new SitesHandler(client);
   }
 
 }
