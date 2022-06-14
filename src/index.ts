@@ -9,6 +9,7 @@ import UsersHandler from "./handlers/users-handler";
 import CalendarHandler from "./handlers/calendar-handler";
 import TeamsHandler from "./handlers/teams-handler";
 import OfficeHandler from "./handlers/office-handler";
+import DriveHandler from "./handlers/drive-handler";
 
 class M365Wrapper {
 
@@ -39,6 +40,7 @@ class M365Wrapper {
   public users: UsersHandler;
   public calendar: CalendarHandler;
   public teams: TeamsHandler;
+  public drive: DriveHandler;
 
   constructor(clientId: string);
   constructor(clientId: string, authority?: string) {
@@ -63,93 +65,7 @@ class M365Wrapper {
     this.users = new UsersHandler(this.client);
     this.calendar = new CalendarHandler(this.client);
     this.teams = new TeamsHandler(this.client);
-  }
-
-
-  public async IsOneDriveInMyLicenses(): Promise<boolean> {
-    try {
-
-      var bFound = false;
-      var teamsSkuPartNumbers: string[] = ['O365_BUSINESS',
-        'SMB_BUSINESS',
-        'OFFICESUBSCRIPTION',
-        'WACONEDRIVESTANDARD',
-        'WACONEDRIVEENTERPRISE',
-        'VISIOONLINE_PLAN1',
-        'VISIOCLIENT']
-
-      var licenses;
-      try {
-        licenses = await this.client.api(`/me/licenseDetails`)
-          .get();
-      } catch (error) {
-        return false;
-      }
-
-      for (var i = 0; i < licenses.value.length; i++) {
-        if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
-          bFound = true;
-          break;
-        }
-      }
-
-      if (!bFound) {
-        bFound = await this.office.IsOfficeInMyLicenses();
-      }
-
-      return bFound;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-  
-  public async GetMyDrives(): Promise<[MicrosoftGraph.Drive]> {
-    try {
-      const items = await this.client.api("/me/drives")
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetMyDriveItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      const items = await this.client.api(`/me/drive/root/search(q='${queryText}')`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetMyDriveAndSharedItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      const items = await this.client.api(`/me/drive/search(q='${queryText}')`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetMySharedItems(): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      const items = await this.client.api(`/me/drive/sharedWithMe`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
+    this.drive = new DriveHandler(this.client, this.office);
   }
 
   public async GetTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
@@ -179,54 +95,6 @@ class M365Wrapper {
   public async GetSiteDriveItemsByQuery(siteIdOrName: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
       const items = await this.client.api(`/sites/${siteIdOrName}/drive/root/search(q='${queryText}')`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetDriveItems(driveId: string): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      const items = await this.client.api(`/drives/${driveId}/root/children`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetDriveItemsByQuery(driveId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      const items = await this.client.api(`/drives/${driveId}/root/search(q='${queryText}')`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetDriveFolderItems(driveId: string, folderId: string): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      const items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetDriveItem(driveId: string, itemId: string): Promise<MicrosoftGraph.DriveItem> {
-    try {
-      const items = await this.client.api(`/drives/${driveId}/items/${itemId}`)
         .get();
 
       return items;
@@ -274,18 +142,6 @@ class M365Wrapper {
     }
   }
 
-  public async GetMyDriveItemSharingPermissions(itemId: string): Promise<[MicrosoftGraph.Permission]> {
-    try {
-      const items = await this.client.api(`/me/drive/items/${itemId}/permissions`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
   // GetMyApplications: Permissions problems (output 403: Forbidden)
   public async GetMyApplications(): Promise<any> {
     try {
@@ -299,11 +155,6 @@ class M365Wrapper {
       throw error;
     }
   }
-
-
-
-
-
 
   // Not working (nb: beta)
   // public async GetUserPresence(userId: string): Promise<any> {
