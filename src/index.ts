@@ -10,6 +10,7 @@ import CalendarHandler from "./handlers/calendar-handler";
 import TeamsHandler from "./handlers/teams-handler";
 import OfficeHandler from "./handlers/office-handler";
 import DriveHandler from "./handlers/drive-handler";
+import SitesHandler from "./handlers/sites-handler";
 
 class M365Wrapper {
 
@@ -41,6 +42,7 @@ class M365Wrapper {
   public calendar: CalendarHandler;
   public teams: TeamsHandler;
   public drive: DriveHandler;
+  public sites: SitesHandler;
 
   constructor(clientId: string);
   constructor(clientId: string, authority?: string) {
@@ -66,35 +68,12 @@ class M365Wrapper {
     this.calendar = new CalendarHandler(this.client);
     this.teams = new TeamsHandler(this.client);
     this.drive = new DriveHandler(this.client, this.office);
+    this.sites = new SitesHandler(this.client);
   }
 
   public async GetTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
     try {
       const items = await this.client.api(`/groups/${teamGroupId}/drives`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetSiteDrives(siteIdOrName: string): Promise<[MicrosoftGraph.Drive]> {
-    try {
-      const items = await this.client.api(`/sites/${siteIdOrName}/drives`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetSiteDriveItemsByQuery(siteIdOrName: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      const items = await this.client.api(`/sites/${siteIdOrName}/drive/root/search(q='${queryText}')`)
         .get();
 
       return items;
