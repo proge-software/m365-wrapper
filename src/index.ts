@@ -66,11 +66,6 @@ class M365Wrapper {
     return await this.msalApplication.acquireTokenPopup(this.authPar);
   }
 
-  //TODO - Da capire che fare, perché nella libreria msal-browser non è presente
-  // public async getLoginInProgress(): Promise<boolean> {
-  //   return await this.msalApplication.getLoginInProgress();
-  // }
-
   public async StatLoginPopupProcess() {
     let account = this.getAccount();
     if (account) {
