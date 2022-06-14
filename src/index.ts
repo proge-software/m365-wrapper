@@ -3,7 +3,7 @@ import { PublicClientApplication, Configuration, AuthenticationResult, PopupRequ
 import { Client, ClientOptions, AuthenticationProvider } from '@microsoft/microsoft-graph-client';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import { AuthCodeMSALBrowserAuthenticationProvider, AuthCodeMSALBrowserAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser";
-import UserSearchRequest from "./Types/UserSearchRequest";
+import UserSearchRequest from "./models/requests/user-search-request";
 
 class M365Wrapper {
 
