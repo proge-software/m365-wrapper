@@ -71,56 +71,6 @@ class M365Wrapper {
     this.sites = new SitesHandler(this.client);
   }
 
-  public async GetTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
-    try {
-      const items = await this.client.api(`/groups/${teamGroupId}/drives`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetTeamDefaultDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      var items = null;
-
-      if (relativePath.length > 0 && relativePath != "/") {
-        if (!relativePath.startsWith("/")) {
-          relativePath = `/${relativePath}`;
-        }
-        if (relativePath.endsWith("/")) {
-          relativePath = relativePath.slice(0, -1);
-        }
-        items = await this.client.api(`/groups/${teamGroupId}/drive/root:${relativePath}:/children`)
-          .get();
-      }
-      else {
-        items = await this.client.api(`/groups/${teamGroupId}/drive/root/children`)
-          .get();
-      }
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-  public async GetTeamDriveItemsByQuery(teamGroupId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
-    try {
-      const items = await this.client.api(`/groups/${teamGroupId}/drive/root/search(q='${queryText}')`)
-        .get();
-
-      return items;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
   // GetMyApplications: Permissions problems (output 403: Forbidden)
   public async GetMyApplications(): Promise<any> {
     try {

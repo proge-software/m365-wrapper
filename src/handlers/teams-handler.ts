@@ -94,6 +94,7 @@ export default class TeamsHandler {
             throw error;
         }
     }
+
     public async GetTeamChannels(teamId: string): Promise<[MicrosoftGraph.Channel]> {
         try {
             const retChannels = await this.client.api(`/teams/${teamId}/channels`)
@@ -132,6 +133,56 @@ export default class TeamsHandler {
             const retEvents = await this.client.api(`/groups/${teamId}/events`)
                 .get();
             return retEvents;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
+    public async GetTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
+        try {
+            const items = await this.client.api(`/groups/${teamGroupId}/drives`)
+                .get();
+
+            return items;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
+    public async GetTeamDefaultDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
+        try {
+            var items = null;
+
+            if (relativePath.length > 0 && relativePath != "/") {
+                if (!relativePath.startsWith("/")) {
+                    relativePath = `/${relativePath}`;
+                }
+                if (relativePath.endsWith("/")) {
+                    relativePath = relativePath.slice(0, -1);
+                }
+                items = await this.client.api(`/groups/${teamGroupId}/drive/root:${relativePath}:/children`)
+                    .get();
+            }
+            else {
+                items = await this.client.api(`/groups/${teamGroupId}/drive/root/children`)
+                    .get();
+            }
+
+            return items;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
+    public async GetTeamDriveItemsByQuery(teamGroupId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+        try {
+            const items = await this.client.api(`/groups/${teamGroupId}/drive/root/search(q='${queryText}')`)
+                .get();
+
+            return items;
         }
         catch (error) {
             throw error;
