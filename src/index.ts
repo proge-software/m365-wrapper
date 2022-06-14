@@ -6,6 +6,7 @@ import { AuthCodeMSALBrowserAuthenticationProvider, AuthCodeMSALBrowserAuthentic
 import PopupRequestConstants from "./constants/popup-request-constants";
 import UserHandler from "./handlers/user-handler";
 import UsersHandler from "./handlers/users-handler";
+import CalendarHandler from "./handlers/calendar-handler";
 
 class M365Wrapper {
 
@@ -33,6 +34,7 @@ class M365Wrapper {
 
   public user: UserHandler;
   public users: UsersHandler;
+  public calendar: CalendarHandler;
 
   constructor(clientId: string);
   constructor(clientId: string, authority?: string) {
@@ -54,17 +56,7 @@ class M365Wrapper {
 
     this.user = new UserHandler(this.msalApplication, this.client);
     this.users = new UsersHandler(this.client);
-  }
-
-  public async GetMyEvents(): Promise<[MicrosoftGraph.Event]> {
-    try {
-      const events = await this.client.api("/me/calendar/events")
-        .select('subject,organizer,attendees,start,end,location,onlineMeeting,bodyPreview,webLink,body')
-        .get();
-      return events;
-    } catch (error) {
-      throw error;
-    }
+    this.calendar = new CalendarHandler(this.client);
   }
 
   public async IsTeamsInMyLicenses(): Promise<boolean> {
@@ -242,27 +234,6 @@ class M365Wrapper {
       .post(onlineMeeting);
 
     return res;
-  }
-
-  public async CreateOutlookCalendarEvent(userEvent: MicrosoftGraph.Event): Promise<[MicrosoftGraph.Event]> {
-    //POST /users/{id | userPrincipalName}/calendar/events   <<< Da provare
-
-    let res: [MicrosoftGraph.Event] = await this.client.api('/me/events')
-      .post(userEvent);
-
-    return res;
-  }
-
-  public async UpdateOutlookCalendarEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {
-    try {
-      let res: MicrosoftGraph.Event = await this.client.api(`/me/events/${eventId}`)
-        .patch(newAtteendees);
-
-      return res;
-    }
-    catch (error) {
-      throw error;
-    }
   }
 
   public async GetMyDrives(): Promise<[MicrosoftGraph.Drive]> {
@@ -501,7 +472,7 @@ class M365Wrapper {
       throw error;
     }
   }
-
+  
   public async GetUserByIdOrEmail(userIdOrEmail: string): Promise<[MicrosoftGraph.User]> {
     try {
       const retUser = await this.client.api(`/users/${userIdOrEmail}`)
