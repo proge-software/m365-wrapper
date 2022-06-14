@@ -8,6 +8,7 @@ import UserHandler from "./handlers/user-handler";
 import UsersHandler from "./handlers/users-handler";
 import CalendarHandler from "./handlers/calendar-handler";
 import TeamsHandler from "./handlers/teams-handler";
+import OfficeHandler from "./handlers/office-handler";
 
 class M365Wrapper {
 
@@ -33,6 +34,7 @@ class M365Wrapper {
   protected options: ClientOptions;
   protected client: Client;
 
+  public office: OfficeHandler;
   public user: UserHandler;
   public users: UsersHandler;
   public calendar: CalendarHandler;
@@ -56,6 +58,7 @@ class M365Wrapper {
 
     this.client = Client.initWithMiddleware(this.options);
 
+    this.office = new OfficeHandler(this.client);
     this.user = new UserHandler(this.msalApplication, this.client);
     this.users = new UsersHandler(this.client);
     this.calendar = new CalendarHandler(this.client);
@@ -91,7 +94,7 @@ class M365Wrapper {
       }
 
       if (!bFound) {
-        bFound = await this.IsOfficeInMyLicenses();
+        bFound = await this.office.IsOfficeInMyLicenses();
       }
 
       return bFound;
@@ -100,69 +103,7 @@ class M365Wrapper {
       throw error;
     }
   }
-
-  public async IsOfficeInMyLicenses(): Promise<boolean> {
-    try {
-
-      var bFound = false;
-      var teamsSkuPartNumbers: string[] = ['M365EDU_A3_FACULTY',
-        'M365EDU_A3_STUDENT',
-        'M365EDU_A5_FACULTY',
-        'M365EDU_A5_STUDENT',
-        'O365_BUSINESS',
-        'SMB_BUSINESS',
-        'OFFICESUBSCRIPTION',
-        'O365_BUSINESS_ESSENTIALS', // Mobile
-        'SMB_BUSINESS_ESSENTIALS', // Mobile
-        'O365_BUSINESS_PREMIUM',
-        'SMB_BUSINESS_PREMIUM',
-        'SPB',
-        'SPE_E3',
-        'SPE_E5',
-        'SPE_E3_USGOV_DOD',
-        'SPE_E3_USGOV_GCCHIGH',
-        'SPE_F1', // Mobile
-        'ENTERPRISEPREMIUM_FACULTY',
-        'ENTERPRISEPREMIUM_STUDENT',
-        'STANDARDPACK', // Mobile
-        'ENTERPRISEPACK',
-        'DEVELOPERPACK',
-        'ENTERPRISEPACK_USGOV_DOD',
-        'ENTERPRISEPACK_USGOV_GCCHIGH',
-        'ENTERPRISEWITHSCAL',
-        'ENTERPRISEPREMIUM',
-        'ENTERPRISEPREMIUM_NOPSTNCONF',
-        'DESKLESSPACK', // Mobile
-        'MIDSIZEPACK',
-        'LITEPACK_P2']
-
-      var licenses;
-      try {
-        licenses = await this.client.api(`/me/licenseDetails`)
-          .get();
-      } catch (error) {
-        return false;
-      }
-
-      for (var i = 0; i < licenses.value.length; i++) {
-        if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
-          bFound = true;
-          break;
-        }
-      }
-
-      return bFound;
-    }
-    catch (error) {
-      throw error;
-    }
-  }
-
-
-
-
-
-
+  
   public async GetMyDrives(): Promise<[MicrosoftGraph.Drive]> {
     try {
       const items = await this.client.api("/me/drives")
