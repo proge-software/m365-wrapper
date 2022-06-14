@@ -1,25 +1,27 @@
 import { AuthError } from "@azure/msal-browser";
-import Result from "../models/results/result";
+import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
+import M365WrapperError  from "../models/results/m365-wrapper-error";
+import M365WrapperResult from "../models/results/m365-wrapper-result";
 
 export default class ErrorsHandler {
 
-    public static GetErrorResult(error: any): Result {
-        let result: Result = { isSuccess: false } as Result;
+    public static GetErrorResult(catchedError: any): M365WrapperResult {
+        let error: M365WrapperError;
 
-        if (error instanceof AuthError) {
-            result.error.code = error.errorCode;
-            result.error.message = error.errorMessage;
-            result.error.stack = error.stack;
+        if (catchedError instanceof AuthError) {
+            error = new M365WrapperError(catchedError, catchedError.errorCode);
         }
-        else if (error instanceof Error) {
-            result.error.code = error.name;
-            result.error.message = error.message;
-            result.error.stack = error.stack;
+        else if (catchedError instanceof Error) {
+            error = new M365WrapperError(catchedError);
         }
         else {
             throw error;
         }
 
-        return result;
+        return new M365WrapperResult(error);
+    }
+
+    public static GetErrorDataResult<TData>(catchedError: any): M365WrapperDataResult<TData> {
+        return new M365WrapperDataResult<TData>(this.GetErrorResult(catchedError));
     }
 }
