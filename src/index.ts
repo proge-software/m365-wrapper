@@ -1,21 +1,21 @@
 import "isomorphic-fetch";
-import { UserAgentApplication, Configuration, AuthenticationParameters, AuthResponse, Account } from 'msal';
+import { PublicClientApplication, Configuration, AuthenticationResult, PopupRequest, AccountInfo } from '@azure/msal-browser';
 import { Client, ClientOptions, AuthenticationProvider } from '@microsoft/microsoft-graph-client';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import { ImplicitMSALAuthenticationProvider, MSALAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/lib/src/browser";
+import { AuthCodeMSALBrowserAuthenticationProvider, AuthCodeMSALBrowserAuthenticationProviderOptions } from "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser";
 import UserSearchRequest from "./Types/UserSearchRequest";
 
-//import { ImplicitMSALAuthenticationProvider as NodeImplicitMSALAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/ImplicitMSALAuthenticationProvider";
-
 class M365Wrapper {
-  protected authPar: AuthenticationParameters = {
+
+  protected authPar: PopupRequest = {
     scopes: ['Calendars.ReadWrite', 'Calendars.Read.Shared',
-      'Directory.AccessAsUser.All', 'Directory.Read.All', 'Directory.ReadWrite.All', 'email', 
-      'Files.Read.All', 'Group.Read.All', 
-      'OnlineMeetings.ReadWrite', 'Reports.Read.All', 
-      'Team.ReadBasic.All', 'User.Read', 'User.Read.All', 'User.ReadBasic.All', 'User.ReadWrite.All' ],
+      'Directory.AccessAsUser.All', 'Directory.Read.All', 'Directory.ReadWrite.All', 'email',
+      'Files.Read.All', 'Group.Read.All',
+      'OnlineMeetings.ReadWrite', 'Reports.Read.All',
+      'Team.ReadBasic.All', 'User.Read', 'User.Read.All', 'User.ReadBasic.All', 'User.ReadWrite.All'],
     prompt: 'select_account',
   };
+
   protected configuration: Configuration = {
     auth: {
       clientId: '',
@@ -25,13 +25,13 @@ class M365Wrapper {
       cacheLocation: 'sessionStorage'
     }
   };
+
   protected GraphScopes: string[] = [...this.authPar.scopes!];
-  protected providerOptions: MSALAuthenticationProviderOptions;
-  protected msalApplication: UserAgentApplication;
+  protected providerOptions: AuthCodeMSALBrowserAuthenticationProviderOptions;
+  protected msalApplication: PublicClientApplication;
   protected authProvider: AuthenticationProvider;
   protected options: ClientOptions;
   protected client: Client;
-
 
   constructor(clientId: string);
   constructor(clientId: string, authority?: string) {
@@ -41,9 +41,9 @@ class M365Wrapper {
     if (authority)
       this.configuration.auth.authority = authority;
 
-    this.msalApplication = new UserAgentApplication(this.configuration);
-    this.providerOptions = new MSALAuthenticationProviderOptions(this.GraphScopes);
-    this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.providerOptions);
+    this.msalApplication = new PublicClientApplication(this.configuration);
+    this.providerOptions = this.authPar as AuthCodeMSALBrowserAuthenticationProviderOptions;
+    this.authProvider = new AuthCodeMSALBrowserAuthenticationProvider(this.msalApplication, this.providerOptions);
 
     this.options = {
       authProvider: this.authProvider
@@ -52,20 +52,18 @@ class M365Wrapper {
     this.client = Client.initWithMiddleware(this.options);
   }
 
-  public async loginPopup(): Promise<AuthResponse> {
-    return await this.msalApplication.loginPopup(this.authPar);
+  public async loginPopup(): Promise<AuthenticationResult> {
+    let loginResult = await this.msalApplication.loginPopup(this.authPar);
+    this.msalApplication.setActiveAccount(loginResult.account);
+    return loginResult;
   }
 
-  public async acquireTokenSilent(): Promise<AuthResponse> {
+  public async acquireTokenSilent(): Promise<AuthenticationResult> {
     return await this.msalApplication.acquireTokenSilent(this.authPar);
   }
 
-  public async acquireTokenPopup(): Promise<AuthResponse> {
+  public async acquireTokenPopup(): Promise<AuthenticationResult> {
     return await this.msalApplication.acquireTokenPopup(this.authPar);
-  }
-
-  public async getLoginInProgress(): Promise<boolean> {
-    return await this.msalApplication.getLoginInProgress();
   }
 
   public async StatLoginPopupProcess() {
@@ -113,18 +111,18 @@ class M365Wrapper {
     }
   }
 
-  public getAccount(): Account {
-    return this.msalApplication.getAccount();
+  public getAccount(): AccountInfo {
+    return this.msalApplication.getActiveAccount();
   }
 
   public logout() {
-    this.msalApplication.logout();
+    this.msalApplication.logoutPopup(this.authPar);
   }
 
   public async GetMyDetails(): Promise<MicrosoftGraph.User> {
     try {
       const userDetails: MicrosoftGraph.User = await this.client.api("/me")
-      .get();
+        .get();
       return userDetails;
     } catch (error) {
       throw error;
@@ -159,49 +157,47 @@ class M365Wrapper {
     try {
 
       var bFound = false;
-      var teamsSkuPartNumbers: string[] = ['ENTERPRISEPACK_FACULTY', 
-      'STANDARDWOFFPACK_FACULTY', 
-      'STANDARDWOFFPACK_IW_FACULTY', 
-      'ENTERPRISEPREMIUM_FACULTY', 
-      'ENTERPRISEPREMIUM_NOPSTNCONF_FACULTY', 
-      'STANDARDPACK_FACULTY', 
-      'ENTERPRISEPACK_EDULRG', 
-      'ENTERPRISEWITHSCAL_FACULTY', 
-      'M365EDU_A3_FACULTY', 
-      'M365EDU_A5_FACULTY', 
-      'M365EDU_A5_NOPSTNCONF_FACULTY', 
-      'STANDARDWOFFPACK_HOMESCHOOL_FAC', 
-      'STANDARDWOFFPACK_FACULTY_DEVICE', 
-      'ENTERPRISEPACK_STUDENT', 
-      'STANDARDWOFFPACK_IW_STUDENT', 
-      'ENTERPRISEPREMIUM_STUDENT', 
-      'ENTERPRISEPREMIUM_NOPSTNCONF_STUDENT', 
-      'STANDARDPACK_STUDENT', 
-      'ENTERPRISEWITHSCAL_STUDENT', 
-      'M365EDU_A3_STUDENT', 
-      'M365EDU_A3_STUUSEBNFT', 
-      'M365EDU_A5_STUDENT', 
-      'M365EDU_A5_STUUSEBNFT', 
-      'M365EDU_A5_NOPSTNCONF_STUDENT', 
-      'M365EDU_A5_NOPSTNCONF_STUUSEBNFT', 
-      'ENTERPRISEPACKPLUS_STUDENT', 
-      'ENTERPRISEPACKPLUS_STUUSEBNFT', 
-      'ENTERPRISEPREMIUM_STUUSEBNFT', 
-      'ENTERPRISEPREMIUM_NOPSTNCONF_STUUSEBNFT', 
-      'STANDARDWOFFPACK_HOMESCHOOL_STU', 
-      'STANDARDWOFFPACK_STUDENT_DEVICE', 
-      'STANDARDWOFFPACK_IW_STUDENT'] 
+      var teamsSkuPartNumbers: string[] = ['ENTERPRISEPACK_FACULTY',
+        'STANDARDWOFFPACK_FACULTY',
+        'STANDARDWOFFPACK_IW_FACULTY',
+        'ENTERPRISEPREMIUM_FACULTY',
+        'ENTERPRISEPREMIUM_NOPSTNCONF_FACULTY',
+        'STANDARDPACK_FACULTY',
+        'ENTERPRISEPACK_EDULRG',
+        'ENTERPRISEWITHSCAL_FACULTY',
+        'M365EDU_A3_FACULTY',
+        'M365EDU_A5_FACULTY',
+        'M365EDU_A5_NOPSTNCONF_FACULTY',
+        'STANDARDWOFFPACK_HOMESCHOOL_FAC',
+        'STANDARDWOFFPACK_FACULTY_DEVICE',
+        'ENTERPRISEPACK_STUDENT',
+        'STANDARDWOFFPACK_IW_STUDENT',
+        'ENTERPRISEPREMIUM_STUDENT',
+        'ENTERPRISEPREMIUM_NOPSTNCONF_STUDENT',
+        'STANDARDPACK_STUDENT',
+        'ENTERPRISEWITHSCAL_STUDENT',
+        'M365EDU_A3_STUDENT',
+        'M365EDU_A3_STUUSEBNFT',
+        'M365EDU_A5_STUDENT',
+        'M365EDU_A5_STUUSEBNFT',
+        'M365EDU_A5_NOPSTNCONF_STUDENT',
+        'M365EDU_A5_NOPSTNCONF_STUUSEBNFT',
+        'ENTERPRISEPACKPLUS_STUDENT',
+        'ENTERPRISEPACKPLUS_STUUSEBNFT',
+        'ENTERPRISEPREMIUM_STUUSEBNFT',
+        'ENTERPRISEPREMIUM_NOPSTNCONF_STUUSEBNFT',
+        'STANDARDWOFFPACK_HOMESCHOOL_STU',
+        'STANDARDWOFFPACK_STUDENT_DEVICE',
+        'STANDARDWOFFPACK_IW_STUDENT']
 
       var licenses;
-      try 
-      {
+      try {
         licenses = await this.client.api(`/me/licenseDetails`)
-        .get();        
-      } catch (error) 
-      {
+          .get();
+      } catch (error) {
         return false;
       }
-      
+
       for (var i = 0; i < licenses.value.length; i++) {
         if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
           bFound = true;
@@ -215,29 +211,27 @@ class M365Wrapper {
       throw error;
     }
   }
-  
+
   public async IsOneDriveInMyLicenses(): Promise<boolean> {
     try {
 
       var bFound = false;
-      var teamsSkuPartNumbers: string[] = ['O365_BUSINESS', 
-      'SMB_BUSINESS', 
-      'OFFICESUBSCRIPTION', 
-      'WACONEDRIVESTANDARD', 
-      'WACONEDRIVEENTERPRISE', 
-      'VISIOONLINE_PLAN1', 
-      'VISIOCLIENT'] 
+      var teamsSkuPartNumbers: string[] = ['O365_BUSINESS',
+        'SMB_BUSINESS',
+        'OFFICESUBSCRIPTION',
+        'WACONEDRIVESTANDARD',
+        'WACONEDRIVEENTERPRISE',
+        'VISIOONLINE_PLAN1',
+        'VISIOCLIENT']
 
       var licenses;
-      try 
-      {
+      try {
         licenses = await this.client.api(`/me/licenseDetails`)
-        .get();        
-      } catch (error) 
-      {
+          .get();
+      } catch (error) {
         return false;
       }
-      
+
       for (var i = 0; i < licenses.value.length; i++) {
         if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
           bFound = true;
@@ -245,8 +239,7 @@ class M365Wrapper {
         }
       }
 
-      if (!bFound)
-      {
+      if (!bFound) {
         bFound = await this.IsOfficeInMyLicenses();
       }
 
@@ -261,47 +254,45 @@ class M365Wrapper {
     try {
 
       var bFound = false;
-      var teamsSkuPartNumbers: string[] = ['M365EDU_A3_FACULTY', 
-      'M365EDU_A3_STUDENT', 
-      'M365EDU_A5_FACULTY', 
-      'M365EDU_A5_STUDENT', 
-      'O365_BUSINESS', 
-      'SMB_BUSINESS', 
-      'OFFICESUBSCRIPTION', 
-      'O365_BUSINESS_ESSENTIALS', // Mobile
-      'SMB_BUSINESS_ESSENTIALS', // Mobile
-      'O365_BUSINESS_PREMIUM', 
-      'SMB_BUSINESS_PREMIUM', 
-      'SPB', 
-      'SPE_E3', 
-      'SPE_E5', 
-      'SPE_E3_USGOV_DOD', 
-      'SPE_E3_USGOV_GCCHIGH', 
-      'SPE_F1', // Mobile
-      'ENTERPRISEPREMIUM_FACULTY', 
-      'ENTERPRISEPREMIUM_STUDENT', 
-      'STANDARDPACK', // Mobile
-      'ENTERPRISEPACK', 
-      'DEVELOPERPACK', 
-      'ENTERPRISEPACK_USGOV_DOD', 
-      'ENTERPRISEPACK_USGOV_GCCHIGH', 
-      'ENTERPRISEWITHSCAL', 
-      'ENTERPRISEPREMIUM', 
-      'ENTERPRISEPREMIUM_NOPSTNCONF', 
-      'DESKLESSPACK', // Mobile
-      'MIDSIZEPACK', 
-      'LITEPACK_P2'] 
+      var teamsSkuPartNumbers: string[] = ['M365EDU_A3_FACULTY',
+        'M365EDU_A3_STUDENT',
+        'M365EDU_A5_FACULTY',
+        'M365EDU_A5_STUDENT',
+        'O365_BUSINESS',
+        'SMB_BUSINESS',
+        'OFFICESUBSCRIPTION',
+        'O365_BUSINESS_ESSENTIALS', // Mobile
+        'SMB_BUSINESS_ESSENTIALS', // Mobile
+        'O365_BUSINESS_PREMIUM',
+        'SMB_BUSINESS_PREMIUM',
+        'SPB',
+        'SPE_E3',
+        'SPE_E5',
+        'SPE_E3_USGOV_DOD',
+        'SPE_E3_USGOV_GCCHIGH',
+        'SPE_F1', // Mobile
+        'ENTERPRISEPREMIUM_FACULTY',
+        'ENTERPRISEPREMIUM_STUDENT',
+        'STANDARDPACK', // Mobile
+        'ENTERPRISEPACK',
+        'DEVELOPERPACK',
+        'ENTERPRISEPACK_USGOV_DOD',
+        'ENTERPRISEPACK_USGOV_GCCHIGH',
+        'ENTERPRISEWITHSCAL',
+        'ENTERPRISEPREMIUM',
+        'ENTERPRISEPREMIUM_NOPSTNCONF',
+        'DESKLESSPACK', // Mobile
+        'MIDSIZEPACK',
+        'LITEPACK_P2']
 
       var licenses;
-      try 
-      {
+      try {
         licenses = await this.client.api(`/me/licenseDetails`)
-        .get();        
-      } catch (error) 
-      {
+          .get();
+      } catch (error) {
         return false;
       }
-      
+
       for (var i = 0; i < licenses.value.length; i++) {
         if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
           bFound = true;
@@ -348,13 +339,13 @@ class M365Wrapper {
     return res;
   }
 
-  public async UpdateOutlookCalendarEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {    
+  public async UpdateOutlookCalendarEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {
     try {
       let res: MicrosoftGraph.Event = await this.client.api(`/me/events/${eventId}`)
         .patch(newAtteendees);
-  
+
       return res;
-      }
+    }
     catch (error) {
       throw error;
     }
@@ -364,7 +355,7 @@ class M365Wrapper {
     try {
       const items = await this.client.api("/me/drives")
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -374,9 +365,9 @@ class M365Wrapper {
 
   public async GetMyDriveItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
-      const items = await this.client.api(`/me/drive/root/search(q='${queryText}')`) 
+      const items = await this.client.api(`/me/drive/root/search(q='${queryText}')`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -386,9 +377,9 @@ class M365Wrapper {
 
   public async GetMyDriveAndSharedItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
-      const items = await this.client.api(`/me/drive/search(q='${queryText}')`) 
+      const items = await this.client.api(`/me/drive/search(q='${queryText}')`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -398,9 +389,9 @@ class M365Wrapper {
 
   public async GetMySharedItems(): Promise<[MicrosoftGraph.DriveItem]> {
     try {
-      const items = await this.client.api(`/me/drive/sharedWithMe`) 
+      const items = await this.client.api(`/me/drive/sharedWithMe`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -412,7 +403,7 @@ class M365Wrapper {
     try {
       const items = await this.client.api(`/groups/${teamGroupId}/drives`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -424,7 +415,7 @@ class M365Wrapper {
     try {
       const items = await this.client.api(`/sites/${siteIdOrName}/drives`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -434,21 +425,21 @@ class M365Wrapper {
 
   public async GetSiteDriveItemsByQuery(siteIdOrName: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
-      const items = await this.client.api(`/sites/${siteIdOrName}/drive/root/search(q='${queryText}')`) 
+      const items = await this.client.api(`/sites/${siteIdOrName}/drive/root/search(q='${queryText}')`)
         .get();
-      
+
       return items;
     }
     catch (error) {
       throw error;
     }
   }
-  
+
   public async GetDriveItems(driveId: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
       const items = await this.client.api(`/drives/${driveId}/root/children`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -458,21 +449,21 @@ class M365Wrapper {
 
   public async GetDriveItemsByQuery(driveId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
-      const items = await this.client.api(`/drives/${driveId}/root/search(q='${queryText}')`) 
+      const items = await this.client.api(`/drives/${driveId}/root/search(q='${queryText}')`)
         .get();
-      
+
       return items;
     }
     catch (error) {
       throw error;
     }
-  }  
+  }
 
   public async GetDriveFolderItems(driveId: string, folderId: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
-      const items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`) 
+      const items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -482,9 +473,9 @@ class M365Wrapper {
 
   public async GetDriveItem(driveId: string, itemId: string): Promise<MicrosoftGraph.DriveItem> {
     try {
-      const items = await this.client.api(`/drives/${driveId}/items/${itemId}`) 
+      const items = await this.client.api(`/drives/${driveId}/items/${itemId}`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -496,7 +487,7 @@ class M365Wrapper {
     try {
       var items = null;
 
-      if (relativePath.length > 0 && relativePath != "/") {  
+      if (relativePath.length > 0 && relativePath != "/") {
         if (!relativePath.startsWith("/")) {
           relativePath = `/${relativePath}`;
         }
@@ -504,13 +495,13 @@ class M365Wrapper {
           relativePath = relativePath.slice(0, -1);
         }
         items = await this.client.api(`/groups/${teamGroupId}/drive/root:${relativePath}:/children`)
-        .get();
-      } 
+          .get();
+      }
       else {
         items = await this.client.api(`/groups/${teamGroupId}/drive/root/children`)
-        .get();
+          .get();
       }
-      
+
       return items;
     }
     catch (error) {
@@ -520,9 +511,9 @@ class M365Wrapper {
 
   public async GetTeamDriveItemsByQuery(teamGroupId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
     try {
-      const items = await this.client.api(`/groups/${teamGroupId}/drive/root/search(q='${queryText}')`) 
+      const items = await this.client.api(`/groups/${teamGroupId}/drive/root/search(q='${queryText}')`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -534,7 +525,7 @@ class M365Wrapper {
     try {
       const items = await this.client.api(`/me/drive/items/${itemId}/permissions`)
         .get();
-      
+
       return items;
     }
     catch (error) {
@@ -640,8 +631,5 @@ class M365Wrapper {
   // }
 
 }
-
-
-
 
 export = M365Wrapper;
