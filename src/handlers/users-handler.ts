@@ -6,7 +6,7 @@ export default class UsersHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async GetUsers(UserSearchRequest: UserSearchRequest): Promise<MicrosoftGraph.User[]> {
+    public async getUsers(UserSearchRequest: UserSearchRequest): Promise<MicrosoftGraph.User[]> {
         let query = this.client.api('/users');
 
         if (UserSearchRequest && UserSearchRequest.issuer && UserSearchRequest.mail) {
@@ -19,7 +19,7 @@ export default class UsersHandler {
         return res;
     }
 
-    public async GetUserByIdOrEmail(userIdOrEmail: string): Promise<[MicrosoftGraph.User]> {
+    public async getUserByIdOrEmail(userIdOrEmail: string): Promise<[MicrosoftGraph.User]> {
         try {
             const retUser = await this.client.api(`/users/${userIdOrEmail}`)
                 .get();
@@ -31,7 +31,7 @@ export default class UsersHandler {
     }
 
     // Not working (nb: beta)
-    // public async GetUserPresence(userId: string): Promise<any> {
+    // public async getUserPresence(userId: string): Promise<any> {
     //   try {
     //     const members = await this.client.api("/beta/users/" + userId + "/presence")
     //       .get();
