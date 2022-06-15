@@ -26,8 +26,8 @@ export default class UserHandler {
         return await this.msalApplication.acquireTokenPopup(this.popupRequest);
     }
 
-    public async StatLoginPopupProcess() {
-        let account = this.getAccount();
+    public async statLoginPopupProcess() {
+        let account = this.getMyAccountInfo();
         if (account) {
             await this.acquireTokenSilent().then(async response => {
                 //const account = thatMsal.getAccount();
@@ -38,7 +38,7 @@ export default class UserHandler {
                 if (error.errorMessage.indexOf("interaction_required") !== -1) {
                     await this.acquireTokenPopup()
                         .then(async response => {
-                            const account = this.getAccount();
+                            const account = this.getMyAccountInfo();
                             // this.SET_ACCOUNT(account);
                             // this.SET_ID_TOKEN(response);
                             // this.SET_LOGIN_STATE(true);              
@@ -55,7 +55,7 @@ export default class UserHandler {
             await this.loginPopup()
                 .then(async response => {
                     await this.acquireTokenSilent().then(async response => {
-                        account = this.getAccount();
+                        account = this.getMyAccountInfo();
                         // this.SET_ACCOUNT(account);
                         // this.SET_ID_TOKEN(response);
                         // this.SET_LOGIN_STATE(true);            
@@ -71,7 +71,7 @@ export default class UserHandler {
         }
     }
 
-    public getAccount(): AccountInfo {
+    public getMyAccountInfo(): AccountInfo {
         return this.msalApplication.getActiveAccount();
     }
 
@@ -79,12 +79,12 @@ export default class UserHandler {
         this.msalApplication.logoutPopup(this.popupRequest);
     }
 
-    public async GetMyDetails(): Promise<MicrosoftGraph.User> {
+    public async getMyDetails(): Promise<MicrosoftGraph.User> {
         return (await this.client.api("/me").get()) as MicrosoftGraph.User;
     }
 
     // GetMyApplications: Permissions problems (output 403: Forbidden)
-    public async GetMyApplications(): Promise<any> {
+    public async getMyApplications(): Promise<any> {
         try {
             // const retReport = await this.client.api("/reports/getOffice365ActivationsUserDetail(period='D7')")
             // const retReport = await this.client.api("/reports/getOffice365ActivationsUserDetail")
