@@ -6,7 +6,7 @@ export default class DriveHandler {
 
     constructor(private readonly client: Client, private readonly office: OfficeHandler) { }
 
-    public async IsOneDriveInMyLicenses(): Promise<boolean> {
+    public async isOneDriveInMyLicenses(): Promise<boolean> {
         try {
 
             var bFound = false;
@@ -34,7 +34,7 @@ export default class DriveHandler {
             }
 
             if (!bFound) {
-                bFound = await this.office.IsOfficeInMyLicenses();
+                bFound = await this.office.IsInMyLicenses();
             }
 
             return bFound;
@@ -44,7 +44,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetMyDrives(): Promise<[MicrosoftGraph.Drive]> {
+    public async getMyDrives(): Promise<[MicrosoftGraph.Drive]> {
         try {
             const items = await this.client.api("/me/drives")
                 .get();
@@ -56,7 +56,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetMyDriveItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getMyDriveItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             const items = await this.client.api(`/me/drive/root/search(q='${queryText}')`)
                 .get();
@@ -68,7 +68,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetMyDriveAndSharedItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getMyDriveAndSharedItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             const items = await this.client.api(`/me/drive/search(q='${queryText}')`)
                 .get();
@@ -80,7 +80,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetMySharedItems(): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getMySharedItems(): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             const items = await this.client.api(`/me/drive/sharedWithMe`)
                 .get();
@@ -92,7 +92,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetDriveItems(driveId: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getDriveItems(driveId: string): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             const items = await this.client.api(`/drives/${driveId}/root/children`)
                 .get();
@@ -104,7 +104,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetDriveItemsByQuery(driveId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getDriveItemsByQuery(driveId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             const items = await this.client.api(`/drives/${driveId}/root/search(q='${queryText}')`)
                 .get();
@@ -116,7 +116,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetDriveFolderItems(driveId: string, folderId: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getDriveFolderItems(driveId: string, folderId: string): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             const items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`)
                 .get();
@@ -128,7 +128,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetDriveItem(driveId: string, itemId: string): Promise<MicrosoftGraph.DriveItem> {
+    public async getDriveItem(driveId: string, itemId: string): Promise<MicrosoftGraph.DriveItem> {
         try {
             const items = await this.client.api(`/drives/${driveId}/items/${itemId}`)
                 .get();
@@ -140,7 +140,7 @@ export default class DriveHandler {
         }
     }
 
-    public async GetMyDriveItemSharingPermissions(itemId: string): Promise<[MicrosoftGraph.Permission]> {
+    public async getMyDriveItemSharingPermissions(itemId: string): Promise<[MicrosoftGraph.Permission]> {
         try {
             const items = await this.client.api(`/me/drive/items/${itemId}/permissions`)
                 .get();
