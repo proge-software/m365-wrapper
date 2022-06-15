@@ -9,4 +9,8 @@ export default class M365WrapperDataResult<TData> extends M365WrapperResult {
         if (data)
             this.data = data;
     }
+
+    static createSuccess<TData>(data: TData): M365WrapperDataResult<TData> {
+        return new M365WrapperDataResult<TData>(undefined, data);
+    }
 }
