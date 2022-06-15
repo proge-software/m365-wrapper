@@ -16,7 +16,7 @@ export default class CalendarHandler {
         }
     }
 
-    public async CreateOutlookCalendarEvent(userEvent: MicrosoftGraph.Event): Promise<[MicrosoftGraph.Event]> {
+    public async CreateEvent(userEvent: MicrosoftGraph.Event): Promise<[MicrosoftGraph.Event]> {
       //POST /users/{id | userPrincipalName}/calendar/events   <<< Da provare
   
       let res: [MicrosoftGraph.Event] = await this.client.api('/me/events')
@@ -25,7 +25,7 @@ export default class CalendarHandler {
       return res;
     }
   
-    public async UpdateOutlookCalendarEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {
+    public async UpdateEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {
       try {
         let res: MicrosoftGraph.Event = await this.client.api(`/me/events/${eventId}`)
           .patch(newAtteendees);
