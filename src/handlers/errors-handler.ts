@@ -5,7 +5,7 @@ import M365WrapperResult from "../models/results/m365-wrapper-result";
 
 export default class ErrorsHandler {
 
-    public static GetErrorResult(catchedError: any): M365WrapperResult {
+    public static getErrorResult(catchedError: any): M365WrapperResult {
         let error: M365WrapperError;
 
         if (catchedError instanceof AuthError) {
@@ -21,7 +21,7 @@ export default class ErrorsHandler {
         return new M365WrapperResult(error);
     }
 
-    public static GetErrorDataResult<TData>(catchedError: any): M365WrapperDataResult<TData> {
-        return new M365WrapperDataResult<TData>(this.GetErrorResult(catchedError));
+    public static getErrorDataResult<TData>(catchedError: any): M365WrapperDataResult<TData> {
+        return new M365WrapperDataResult<TData>(this.getErrorResult(catchedError));
     }
 }
