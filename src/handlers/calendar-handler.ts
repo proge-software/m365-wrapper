@@ -5,7 +5,7 @@ export default class CalendarHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async GetMyEvents(): Promise<[MicrosoftGraph.Event]> {
+    public async getMyEvents(): Promise<[MicrosoftGraph.Event]> {
         try {
             const events = await this.client.api("/me/calendar/events")
                 .select('subject,organizer,attendees,start,end,location,onlineMeeting,bodyPreview,webLink,body')
@@ -16,7 +16,7 @@ export default class CalendarHandler {
         }
     }
 
-    public async CreateEvent(userEvent: MicrosoftGraph.Event): Promise<[MicrosoftGraph.Event]> {
+    public async createEvent(userEvent: MicrosoftGraph.Event): Promise<[MicrosoftGraph.Event]> {
       //POST /users/{id | userPrincipalName}/calendar/events   <<< Da provare
   
       let res: [MicrosoftGraph.Event] = await this.client.api('/me/events')
@@ -25,7 +25,7 @@ export default class CalendarHandler {
       return res;
     }
   
-    public async UpdateEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {
+    public async updateEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {
       try {
         let res: MicrosoftGraph.Event = await this.client.api(`/me/events/${eventId}`)
           .patch(newAtteendees);
