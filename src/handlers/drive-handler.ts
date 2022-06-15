@@ -34,7 +34,7 @@ export default class DriveHandler {
             }
 
             if (!bFound) {
-                bFound = await this.office.IsInMyLicenses();
+                bFound = await this.office.isInMyLicenses();
             }
 
             return bFound;

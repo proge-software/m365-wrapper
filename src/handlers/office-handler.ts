@@ -4,7 +4,7 @@ export default class OfficeHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async IsInMyLicenses(): Promise<boolean> {
+    public async isInMyLicenses(): Promise<boolean> {
         try {
 
             var bFound = false;
