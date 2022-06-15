@@ -1,39 +1,47 @@
 import { Client } from "@microsoft/microsoft-graph-client";
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
+import ErrorsHandler from "./errors-handler";
 
 export default class CalendarHandler {
 
-    constructor(private readonly client: Client) { }
+  constructor(private readonly client: Client) { }
 
-    public async getMyEvents(): Promise<[MicrosoftGraph.Event]> {
-        try {
-            const events = await this.client.api("/me/calendar/events")
-                .select('subject,organizer,attendees,start,end,location,onlineMeeting,bodyPreview,webLink,body')
-                .get();
-            return events;
-        } catch (error) {
-            throw error;
-        }
+  public async getMyEvents(): Promise<M365WrapperDataResult<[MicrosoftGraph.Event]>> {
+    try {
+      let events: [MicrosoftGraph.Event] = await this.client.api("/me/calendar/events")
+        .select('subject,organizer,attendees,start,end,location,onlineMeeting,bodyPreview,webLink,body')
+        .get();
+
+      return M365WrapperDataResult.createSuccess(events);
+    } catch (error) {
+      return ErrorsHandler.getErrorDataResult<[MicrosoftGraph.Event]>(error);
     }
+  }
 
-    public async createEvent(userEvent: MicrosoftGraph.Event): Promise<[MicrosoftGraph.Event]> {
-      //POST /users/{id | userPrincipalName}/calendar/events   <<< Da provare
-  
-      let res: [MicrosoftGraph.Event] = await this.client.api('/me/events')
+  public async createEvent(userEvent: MicrosoftGraph.Event): Promise<M365WrapperDataResult<[MicrosoftGraph.Event]>> {
+    //POST /users/{id | userPrincipalName}/calendar/events   <<< Da provare
+
+    try {
+      let event: [MicrosoftGraph.Event] = await this.client.api('/me/events')
         .post(userEvent);
-  
-      return res;
+
+      return M365WrapperDataResult.createSuccess(event);
     }
-  
-    public async updateEventAttendees(eventId: string, newAtteendees: string): Promise<MicrosoftGraph.Event> {
-      try {
-        let res: MicrosoftGraph.Event = await this.client.api(`/me/events/${eventId}`)
-          .patch(newAtteendees);
-  
-        return res;
-      }
-      catch (error) {
-        throw error;
-      }
+    catch (error) {
+      return ErrorsHandler.getErrorDataResult<[MicrosoftGraph.Event]>(error);
     }
+  }
+
+  public async updateEventAttendees(eventId: string, newAtteendees: string): Promise<M365WrapperDataResult<MicrosoftGraph.Event>> {
+    try {
+      let event: MicrosoftGraph.Event = await this.client.api(`/me/events/${eventId}`)
+        .patch(newAtteendees);
+
+      return M365WrapperDataResult.createSuccess(event);
+    }
+    catch (error) {
+      return ErrorsHandler.getErrorDataResult<MicrosoftGraph.Event>(error);
+    }
+  }
 }
