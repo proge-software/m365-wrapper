@@ -1,16 +1,19 @@
 import { Client } from "@microsoft/microsoft-graph-client";
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
+import M365WrapperResult from "../models/results/m365-wrapper-result";
+import ErrorsHandler from "./errors-handler";
 import OfficeHandler from "./office-handler";
 
 export default class DriveHandler {
 
     constructor(private readonly client: Client, private readonly office: OfficeHandler) { }
 
-    public async isOneDriveInMyLicenses(): Promise<boolean> {
+    public async isOneDriveInMyLicenses(): Promise<M365WrapperResult> {
         try {
 
-            var bFound = false;
-            var teamsSkuPartNumbers: string[] = ['O365_BUSINESS',
+            let result: M365WrapperResult = { isSuccess: false } as M365WrapperResult;
+            let teamsSkuPartNumbers: string[] = ['O365_BUSINESS',
                 'SMB_BUSINESS',
                 'OFFICESUBSCRIPTION',
                 'WACONEDRIVESTANDARD',
@@ -18,137 +21,132 @@ export default class DriveHandler {
                 'VISIOONLINE_PLAN1',
                 'VISIOCLIENT']
 
-            var licenses;
-            try {
-                licenses = await this.client.api(`/me/licenseDetails`)
-                    .get();
-            } catch (error) {
-                return false;
-            }
+            let licenses = await this.client.api(`/me/licenseDetails`)
+                .get();
 
-            for (var i = 0; i < licenses.value.length; i++) {
+            for (let i = 0; i < licenses.value.length; i++) {
                 if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
-                    bFound = true;
+                    result.isSuccess = true;
                     break;
                 }
             }
 
-            if (!bFound) {
-                bFound = await this.office.isInMyLicenses();
+            if (!result) {
+                result.isSuccess = await this.office.isInMyLicenses();
             }
 
-            return bFound;
+            return result;
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorResult(error);
         }
     }
 
-    public async getMyDrives(): Promise<[MicrosoftGraph.Drive]> {
+    public async getMyDrives(): Promise<M365WrapperDataResult<[MicrosoftGraph.Drive]>> {
         try {
-            const items = await this.client.api("/me/drives")
+            let items: [MicrosoftGraph.Drive] = await this.client.api("/me/drives")
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getMyDriveItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getMyDriveItemsByQuery(queryText: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
         try {
-            const items = await this.client.api(`/me/drive/root/search(q='${queryText}')`)
+            let items = await this.client.api(`/me/drive/root/search(q='${queryText}')`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getMyDriveAndSharedItemsByQuery(queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getMyDriveAndSharedItemsByQuery(queryText: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
         try {
-            const items = await this.client.api(`/me/drive/search(q='${queryText}')`)
+            let items = await this.client.api(`/me/drive/search(q='${queryText}')`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getMySharedItems(): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getMySharedItems(): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
         try {
-            const items = await this.client.api(`/me/drive/sharedWithMe`)
+            let items = await this.client.api(`/me/drive/sharedWithMe`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getDriveItems(driveId: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getDriveItems(driveId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
         try {
-            const items = await this.client.api(`/drives/${driveId}/root/children`)
+            let items = await this.client.api(`/drives/${driveId}/root/children`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getDriveItemsByQuery(driveId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getDriveItemsByQuery(driveId: string, queryText: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
         try {
-            const items = await this.client.api(`/drives/${driveId}/root/search(q='${queryText}')`)
+            let items = await this.client.api(`/drives/${driveId}/root/search(q='${queryText}')`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getDriveFolderItems(driveId: string, folderId: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getDriveFolderItems(driveId: string, folderId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
         try {
-            const items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`)
+            let items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getDriveItem(driveId: string, itemId: string): Promise<MicrosoftGraph.DriveItem> {
+    public async getDriveItem(driveId: string, itemId: string): Promise<M365WrapperDataResult<MicrosoftGraph.DriveItem>> {
         try {
-            const items = await this.client.api(`/drives/${driveId}/items/${itemId}`)
+            let items = await this.client.api(`/drives/${driveId}/items/${itemId}`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getMyDriveItemSharingPermissions(itemId: string): Promise<[MicrosoftGraph.Permission]> {
+    public async getMyDriveItemSharingPermissions(itemId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.Permission]>> {
         try {
-            const items = await this.client.api(`/me/drive/items/${itemId}/permissions`)
+            let items = await this.client.api(`/me/drive/items/${itemId}/permissions`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 }
