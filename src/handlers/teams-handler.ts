@@ -5,7 +5,7 @@ export default class TeamsHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async IsTeamsInMyLicenses(): Promise<boolean> {
+    public async IsInMyLicenses(): Promise<boolean> {
         try {
 
             var bFound = false;
