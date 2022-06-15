@@ -1,15 +1,18 @@
 import { Client } from "@microsoft/microsoft-graph-client";
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
+import M365WrapperResult from "../models/results/m365-wrapper-result";
+import ErrorsHandler from "./errors-handler";
 
 export default class TeamsHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async isInMyLicenses(): Promise<boolean> {
+    public async isInMyLicenses(): Promise<M365WrapperResult> {
         try {
 
-            var bFound = false;
-            var teamsSkuPartNumbers: string[] = ['ENTERPRISEPACK_FACULTY',
+            let result: M365WrapperResult = { isSuccess: false } as M365WrapperResult;
+            let teamsSkuPartNumbers: string[] = ['ENTERPRISEPACK_FACULTY',
                 'STANDARDWOFFPACK_FACULTY',
                 'STANDARDWOFFPACK_IW_FACULTY',
                 'ENTERPRISEPREMIUM_FACULTY',
@@ -42,118 +45,119 @@ export default class TeamsHandler {
                 'STANDARDWOFFPACK_STUDENT_DEVICE',
                 'STANDARDWOFFPACK_IW_STUDENT']
 
-            var licenses;
-            try {
-                licenses = await this.client.api(`/me/licenseDetails`)
-                    .get();
-            } catch (error) {
-                return false;
-            }
+            let licenses = await this.client.api(`/me/licenseDetails`)
+                .get();
 
-            for (var i = 0; i < licenses.value.length; i++) {
+            for (let i = 0; i < licenses.value.length; i++) {
                 if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
-                    bFound = true;
+                    result.isSuccess = true;
                     break;
                 }
             }
 
-            return bFound;
+            return result;
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorResult(error);
         }
     }
 
-    public async getMyJoinedTeams(): Promise<[MicrosoftGraph.Team]> {
+    public async getMyJoinedTeams(): Promise<M365WrapperDataResult<[MicrosoftGraph.Team]>> {
         try {
-            const teams = await this.client.api("/me/joinedTeams")
+            let teams: [MicrosoftGraph.Team] = await this.client.api("/me/joinedTeams")
                 .select('Id,displayName,description')
                 .get();
-            return teams;
+
+            return M365WrapperDataResult.createSuccess(teams);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async createOnlineMeeting(onlineMeeting: MicrosoftGraph.OnlineMeeting): Promise<[MicrosoftGraph.OnlineMeeting]> {
+    public async createOnlineMeeting(onlineMeeting: MicrosoftGraph.OnlineMeeting): Promise<M365WrapperDataResult<[MicrosoftGraph.OnlineMeeting]>> {
 
-        let res: [MicrosoftGraph.OnlineMeeting] = await this.client.api('/me/onlineMeetings')
-            .post(onlineMeeting);
+        try {
+            let res: [MicrosoftGraph.OnlineMeeting] = await this.client.api('/me/onlineMeetings')
+                .post(onlineMeeting);
 
-        return res;
+            return M365WrapperDataResult.createSuccess(res);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
     }
 
-    public async getTeam(teamId: string): Promise<MicrosoftGraph.Team> {
+    public async getTeam(teamId: string): Promise<M365WrapperDataResult<MicrosoftGraph.Team>> {
         try {
-            const retTeam = await this.client.api(`/teams/${teamId}`)
+            let retTeam: MicrosoftGraph.Team = await this.client.api(`/teams/${teamId}`)
                 .get();
-            return retTeam;
+            return M365WrapperDataResult.createSuccess(retTeam);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getTeamChannels(teamId: string): Promise<[MicrosoftGraph.Channel]> {
+    public async getTeamChannels(teamId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.Channel]>> {
         try {
-            const retChannels = await this.client.api(`/teams/${teamId}/channels`)
+            let retChannels: [MicrosoftGraph.Channel] = await this.client.api(`/teams/${teamId}/channels`)
                 .get();
-            return retChannels;
+            return M365WrapperDataResult.createSuccess(retChannels);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getTeamChannel(teamId: string, channelId: string): Promise<MicrosoftGraph.Channel> {
+    public async getTeamChannel(teamId: string, channelId: string): Promise<M365WrapperDataResult<MicrosoftGraph.Channel>> {
         try {
-            const retChannel = await this.client.api(`/teams/${teamId}/channels/${channelId}`)
+            let retChannel: MicrosoftGraph.Channel = await this.client.api(`/teams/${teamId}/channels/${channelId}`)
                 .get();
-            return retChannel;
+            return M365WrapperDataResult.createSuccess(retChannel);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getTeamMembers(teamId: string): Promise<[MicrosoftGraph.DirectoryObject]> {
+    public async getTeamMembers(teamId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DirectoryObject]>> {
         try {
-            const retMembers = await this.client.api(`/groups/${teamId}/members`)
+            let retMembers: [MicrosoftGraph.DirectoryObject] = await this.client.api(`/groups/${teamId}/members`)
                 .get();
-            return retMembers;
+            return M365WrapperDataResult.createSuccess(retMembers);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getTeamEvents(teamId: string): Promise<[MicrosoftGraph.Event]> {
+    public async getTeamEvents(teamId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.Event]>> {
         try {
-            const retEvents = await this.client.api(`/groups/${teamId}/events`)
+            let retEvents: [MicrosoftGraph.Event] = await this.client.api(`/groups/${teamId}/events`)
                 .get();
-            return retEvents;
+            return M365WrapperDataResult.createSuccess(retEvents);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
+    public async getTeamDrives(teamGroupId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.Drive]>> {
         try {
-            const items = await this.client.api(`/groups/${teamGroupId}/drives`)
+            let items: [MicrosoftGraph.Drive] = await this.client.api(`/groups/${teamGroupId}/drives`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getTeamDefaultDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getTeamDefaultDriveItems(teamGroupId: string, relativePath: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
         try {
-            var items = null;
+            let items: [MicrosoftGraph.DriveItem] = null;
 
             if (relativePath.length > 0 && relativePath != "/") {
                 if (!relativePath.startsWith("/")) {
@@ -170,22 +174,22 @@ export default class TeamsHandler {
                     .get();
             }
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
-    public async getTeamDriveItemsByQuery(teamGroupId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getTeamDriveItemsByQuery(teamGroupId: string, queryText: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
         try {
-            const items = await this.client.api(`/groups/${teamGroupId}/drive/root/search(q='${queryText}')`)
+            let items: [MicrosoftGraph.DriveItem] = await this.client.api(`/groups/${teamGroupId}/drive/root/search(q='${queryText}')`)
                 .get();
 
-            return items;
+            return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 }
