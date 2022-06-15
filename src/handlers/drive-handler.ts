@@ -32,7 +32,7 @@ export default class DriveHandler {
             }
 
             if (!result) {
-                result.isSuccess = await this.office.isInMyLicenses();
+                result.isSuccess = (await this.office.isInMyLicenses()).isSuccess;
             }
 
             return result;
