@@ -5,7 +5,7 @@ export default class TeamsHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async IsInMyLicenses(): Promise<boolean> {
+    public async isInMyLicenses(): Promise<boolean> {
         try {
 
             var bFound = false;
@@ -64,7 +64,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async GetMyJoinedTeams(): Promise<[MicrosoftGraph.Team]> {
+    public async getMyJoinedTeams(): Promise<[MicrosoftGraph.Team]> {
         try {
             const teams = await this.client.api("/me/joinedTeams")
                 .select('Id,displayName,description')
@@ -76,7 +76,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async CreateOnlineMeeting(onlineMeeting: MicrosoftGraph.OnlineMeeting): Promise<[MicrosoftGraph.OnlineMeeting]> {
+    public async createOnlineMeeting(onlineMeeting: MicrosoftGraph.OnlineMeeting): Promise<[MicrosoftGraph.OnlineMeeting]> {
 
         let res: [MicrosoftGraph.OnlineMeeting] = await this.client.api('/me/onlineMeetings')
             .post(onlineMeeting);
@@ -84,7 +84,7 @@ export default class TeamsHandler {
         return res;
     }
 
-    public async GetTeam(teamId: string): Promise<MicrosoftGraph.Team> {
+    public async getTeam(teamId: string): Promise<MicrosoftGraph.Team> {
         try {
             const retTeam = await this.client.api(`/teams/${teamId}`)
                 .get();
@@ -95,7 +95,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async GetTeamChannels(teamId: string): Promise<[MicrosoftGraph.Channel]> {
+    public async getTeamChannels(teamId: string): Promise<[MicrosoftGraph.Channel]> {
         try {
             const retChannels = await this.client.api(`/teams/${teamId}/channels`)
                 .get();
@@ -106,7 +106,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async GetTeamChannel(teamId: string, channelId: string): Promise<MicrosoftGraph.Channel> {
+    public async getTeamChannel(teamId: string, channelId: string): Promise<MicrosoftGraph.Channel> {
         try {
             const retChannel = await this.client.api(`/teams/${teamId}/channels/${channelId}`)
                 .get();
@@ -117,7 +117,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async GetTeamMembers(teamId: string): Promise<[MicrosoftGraph.DirectoryObject]> {
+    public async getTeamMembers(teamId: string): Promise<[MicrosoftGraph.DirectoryObject]> {
         try {
             const retMembers = await this.client.api(`/groups/${teamId}/members`)
                 .get();
@@ -128,7 +128,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async GetTeamEvents(teamId: string): Promise<[MicrosoftGraph.Event]> {
+    public async getTeamEvents(teamId: string): Promise<[MicrosoftGraph.Event]> {
         try {
             const retEvents = await this.client.api(`/groups/${teamId}/events`)
                 .get();
@@ -139,7 +139,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async GetTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
+    public async getTeamDrives(teamGroupId: string): Promise<[MicrosoftGraph.Drive]> {
         try {
             const items = await this.client.api(`/groups/${teamGroupId}/drives`)
                 .get();
@@ -151,7 +151,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async GetTeamDefaultDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getTeamDefaultDriveItems(teamGroupId: string, relativePath: string): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             var items = null;
 
@@ -177,7 +177,7 @@ export default class TeamsHandler {
         }
     }
 
-    public async GetTeamDriveItemsByQuery(teamGroupId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getTeamDriveItemsByQuery(teamGroupId: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             const items = await this.client.api(`/groups/${teamGroupId}/drive/root/search(q='${queryText}')`)
                 .get();
