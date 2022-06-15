@@ -5,7 +5,7 @@ export default class SitesHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async GetSiteDrives(siteIdOrName: string): Promise<[MicrosoftGraph.Drive]> {
+    public async getSiteDrives(siteIdOrName: string): Promise<[MicrosoftGraph.Drive]> {
         try {
             const items = await this.client.api(`/sites/${siteIdOrName}/drives`)
                 .get();
@@ -17,7 +17,7 @@ export default class SitesHandler {
         }
     }
 
-    public async GetSiteDriveItemsByQuery(siteIdOrName: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
+    public async getSiteDriveItemsByQuery(siteIdOrName: string, queryText: string): Promise<[MicrosoftGraph.DriveItem]> {
         try {
             const items = await this.client.api(`/sites/${siteIdOrName}/drive/root/search(q='${queryText}')`)
                 .get();
