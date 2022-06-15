@@ -15,7 +15,7 @@ export default class CalendarHandler {
 
       return M365WrapperDataResult.createSuccess(events);
     } catch (error) {
-      return ErrorsHandler.getErrorDataResult<[MicrosoftGraph.Event]>(error);
+      return ErrorsHandler.getErrorDataResult(error);
     }
   }
 
@@ -29,7 +29,7 @@ export default class CalendarHandler {
       return M365WrapperDataResult.createSuccess(event);
     }
     catch (error) {
-      return ErrorsHandler.getErrorDataResult<[MicrosoftGraph.Event]>(error);
+      return ErrorsHandler.getErrorDataResult(error);
     }
   }
 
@@ -41,7 +41,7 @@ export default class CalendarHandler {
       return M365WrapperDataResult.createSuccess(event);
     }
     catch (error) {
-      return ErrorsHandler.getErrorDataResult<MicrosoftGraph.Event>(error);
+      return ErrorsHandler.getErrorDataResult(error);
     }
   }
 }
