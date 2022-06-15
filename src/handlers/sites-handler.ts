@@ -15,7 +15,7 @@ export default class SitesHandler {
             return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            ErrorsHandler.getErrorDataResult(error);
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 
@@ -27,7 +27,7 @@ export default class SitesHandler {
             return M365WrapperDataResult.createSuccess(items);
         }
         catch (error) {
-            ErrorsHandler.getErrorDataResult(error);
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 }

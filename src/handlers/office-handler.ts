@@ -54,7 +54,7 @@ export default class OfficeHandler {
             return result;
         }
         catch (error) {
-            ErrorsHandler.getErrorResult(error);
+            return ErrorsHandler.getErrorResult(error);
         }
     }
 }
