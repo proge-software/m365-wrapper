@@ -25,6 +25,39 @@ This library, like Msal, implements the [Implicit Grant Flow](https://docs.micro
 
 ## Usage
 
+### Result
+
+The methods in the library return two types of response:
+
+- **M365WrapperResult**: when the method only returns whether the operation was successful or not
+
+```json
+{
+    "isSuccess": true,
+    "error": {
+        "code": "",
+        "name": "",
+        "message": "",
+        "stack": ""
+    }
+}
+```
+
+- **M365WrapperDataResult**: when the method returns data
+
+```json
+{
+    "isSuccess": true,
+    "data": {}, // Object representing the result of the invoked method
+    "error": {
+        "code": "",
+        "name": "",
+        "message": "",
+        "stack": ""
+    }
+}
+```
+
 ### Authentication
 
 Client instance
