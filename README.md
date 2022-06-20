@@ -25,10 +25,43 @@ This library, like Msal, implements the [Implicit Grant Flow](https://docs.micro
 
 ## Usage
 
+### Result
+
+The methods in the library return two types of response:
+
+- **M365WrapperResult**: when the method only returns whether the operation was successful or not
+
+```json
+{
+    "isSuccess": true,
+    "error": {
+        "code": "",
+        "name": "",
+        "message": "",
+        "stack": ""
+    }
+}
+```
+
+- **M365WrapperDataResult**: when the method returns data
+
+```json
+{
+    "isSuccess": true,
+    "data": {}, // Object representing the result of the invoked method
+    "error": {
+        "code": "",
+        "name": "",
+        "message": "",
+        "stack": ""
+    }
+}
+```
+
 ### Authentication
 
 Client instance
-```
+```js
 var clientApplicationId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";
 var organizationsClient = new M365Wrapper(clientApplicationId);
 var allMicrosoftAccountClient = new M365Wrapper(clientId, "https://login.microsoftonline.com/common");
@@ -36,92 +69,92 @@ var singleTenantClient = new M365Wrapper(clientId, "https://login.microsoftonlin
 ```
 
 Login with Popup
-```
+```js
 const authResponse = await organizationsClient.user.loginPopup();
 ``` 
 
 Evaluate if the user has already logged and acquire token silently
-```
+```js
 await organizationsClient.user.statLoginPopupProcess();
 ``` 
 
 Logout (with account choice)
-```
+```js
 await organizationsClient.user.logout();
 ``` 
 
 ### User Info
 
 Get logged user details (output type: MicrosoftGraph.User)
-```
+```js
 const userDetails = await organizationsClient.user.getMyDetails();
 ``` 
 
 Get data of a user (output type: MicrosoftGraph.User)
-```
+```js
 var userIdOrEmail = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx> | <userEmail>";     // A valid user id or email (required).
 const returnedUser = await organizationsClient.users.getUserByIdOrEmail(userIdOrEmail);
 ``` 
 
 Get logged user events (output type: collection of {subject, organizer, attendees, start, end, location, onlineMeeting, bodyPreview, webLink, body})
-```
+```js
 const userEvents = await organizationsClient.calendar.getMyEvents();
 ``` 
 
 Get logged user joined teams (output type: collection of MicrosoftGraph.Team)
-```
+```js
 const joinedTeams = await organizationsClient.teams.getMyJoinedTeams();
 ``` 
 
 Get users from your organization (output type: collection of MicrosoftGraph.User)
-```
+```js
 const myOrgUsers = await organizationsClient.users.getUsers();
 ``` 
 
 Determines whether the currently logged in user's licenses include Microsoft OneDrive (output type: boolean)
-```
+```js
 const isOneDriveInMyLicenses = await organizationsClient.drive.isOneDriveInMyLicenses();
 ``` 
 
 Determines whether the currently logged in user's licenses include Microsoft Office and related products (output type: boolean)
-```
+```js
 const isOfficeInMyLicenses = await organizationsClient.office.isInMyLicenses();
 ``` 
 
 ### Teams info
 
 Determines whether the currently logged in user's licenses include Microsoft Teams (output type: boolean)
-```
+```js
 const isTeamsInMyLicenses = await organizationsClient.teams.isInMyLicenses();
 ``` 
 
 Get data of the specified team (output type: MicrosoftGraph.Team)
-```
+```js
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 const returnedTeam = await organizationsClient.teams.getTeam(teamGroupId);
 ``` 
 
 Get the list of the channels of a team (output type: collection of MicrosoftGraph.Channel)
-```
+```js
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 const teamChannelsList = await organizationsClient.teams.getTeamChannels(teamGroupId);
 ``` 
 
 Get data of a team's channel (output type: MicrosoftGraph.Channel)
-```
+```js
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 var channelId = "<channelId>";                                  // A valid channel unique id (required).
 const returnedChannel = await organizationsClient.teams.getTeamChannel();
 ``` 
 
 Get a list of the group's direct members (output type: collection of MicrosoftGraph.DirectoryObject)
-```
+```js
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 const teamMembersList = await organizationsClient.teams.getTeamMembers(teamGroupId);
 ``` 
 
 Get a list with the group's events (output type: collection of MicrosoftGraph.Event)
-```
+```js
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 const teamEventsList = await organizationsClient.teams.getTeamEvents(teamGroupId);
 ``` 
@@ -129,7 +162,7 @@ const teamEventsList = await organizationsClient.teams.getTeamEvents(teamGroupId
 ### Teams meeting
 
 Create online meeting (note: the meeting does not show up on the user's calendar. Output type: MicrosoftGraph.OnlineMeeting)
-```
+```js
 var meeting = {
     subject: "Online meeting subject",
     startDateTime: "2020-05-28T11:00:00.0000000-00:00",
@@ -146,7 +179,7 @@ const onlineMeeting = await organizationsClient.teams.createOnlineMeeting(meetin
 ``` 
 
 Create outlook calendar event (output type: MicrosoftGraph.Event)
-```
+```js
 var outlCalEvent = {
     subject: "Outlook calendar event subject",
     body: {
@@ -202,7 +235,7 @@ const outCalEvent = await organizationsClient.calendar.createEvent(outlCalEvent)
 ``` 
 
 Update outlook calendar event attendees (output type: MicrosoftGraph.Event)
-```
+```js
 var eventId = "<eventId>";                          // A valid outlook calendar event id (required).
 var newAtteendees = {
     attendees: [                                    // Fill with all attendees needed for the event, followed by a comma exept the last one
@@ -230,51 +263,51 @@ const outCalEvent = await organizationsClient.calendar.updateEventAttendees(even
 ### One drive
 
 Enumerate OneDrive resources available to the logged user (output type: collection of MicrosoftGraph.Drive)
-```
+```js
 const myDrives = await organizationsClient.drive.getMyDrives();
 ```
 
 Search, within the drive of the logged user, the hierarchy of items for items matching a query (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 var searchText = "<Text to search>";    // Optional. The query text used to search for items. Values may be matched
                                         // across several fields including filename, metadata, and file content.
 const driveItems = await organizationsClient.drive.getMyDriveItemsByQuery(searchText);
 ```
 
 Get DriveItems searching for items within both logged user drive and items shared with him (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 var searchText = "<Text to search>";    // Optional. The query text used to search for items. Values may be matched
                                         // across several fields including filename, metadata, and file content.
 const driveItems = await organizationsClient.drive.getMyDriveAndSharedItemsByQuery(searchText);
 ```
 
 Retrieve a collection of DriveItem resources that have been shared with the logged user (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 const driveItems = await organizationsClient.drive.getMySharedItems();
 ```
 
 Get a DriveItem resource (also a shared one). To access a shared DriveItem resource, the request can be made using the 
 parameters provided in 'remoteItem' facet returned by the GetMySharedItems() method (output type: MicrosoftGraph.DriveItem)
-```
+```js
 var driveId = "<driveId>";  // A valid drive unique id (required).
 var itemId = "<itemId>";    // A valid DriveItem id (required).
 const item = await organizationsClient.drive.getDriveItem(driveId, itemId);
 ```
 
 Enumerate OneDrive resources available to the team group (output type: collection of MicrosoftGraph.Drive)
-```
+```js
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 const driveItems = await organizationsClient.teams.getTeamDrives(teamGroupId);
 ```
 
 Enumerate the Drives (document libraries) under the given SharePoint site (output type: collection of MicrosoftGraph.Drive)
-```
+```js
 var siteIdOrName = "<siteIdOrName>";        // A valid sharepoint site name or id (required; site name example: contoso.sharepoint.com).
 const driveItems = await organizationsClient.site.getSiteDrives(siteIdOrName);
 ```
 
 Search, within the drive of the given SharePoint site, the hierarchy of items for items matching a query (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 var siteIdOrName = "<siteIdOrName>";    // A valid sharepoint site name or id (required; site name example: contoso.sharepoint.com).
 var searchText = "<Text to search>";    // Optional. The query text used to search for items. Values may be matched
                                         // across several fields including filename, metadata, and file content.
@@ -282,13 +315,13 @@ const driveItems = await organizationsClient.site.getSiteDriveItemsByQuery(siteI
 ```
 
 Enumerate the DriveItem resources in the root of a specific OneDrive resource (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 var driveId = "<driveId>";      // A valid drive unique id (required).
 const driveItems = await organizationsClient.drive.getDriveItems(driveId);
 ```
 
 Search, within the given OneDrive resource, the hierarchy of items for items matching a query (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 var driveId = "<driveId>";              // A valid drive unique id (required).
 var searchText = "<Text to search>";    // Optional. The query text used to search for items. Values may be matched
                                         // across several fields including filename, metadata, and file content.
@@ -296,21 +329,21 @@ const driveItems = await organizationsClient.drive.getDriveItemsByQuery(driveId,
 ```
 
 Enumerate the DriveItems resources in the folder of a specific OneDrive resource (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 var driveId = "<driveId>";      // A valid drive unique id (required).
 var folderId = "<folderId>";    // A valid folder id (required).
 const folderItems = await organizationsClient.drive.getDriveFolderItems(driveId, folderId);
 ```
 
 Access a Teams group default document library and get the list of the children of a DriveItem by root relative path (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 var relPath = "/General/MySpecificFolder";                      // Optional. Relative path (the slash ("/") at the beginning and/or at the end can be specified or omitted).
 const driveItemContentList = await organizationsClient.teams.getTeamDefaultDriveItems(teamGroupId, relPath);
 ``` 
 
 Search, within the given Teams group, the hierarchy of items for items matching a query (output type: collection of MicrosoftGraph.DriveItem)
-```
+```js
 var teamGroupId = "<xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx>";     // A valid Teams group unique id (required).
 var searchText = "<Text to search>";                            // Optional. The query text used to search for items. Values may be matched
                                                                 // across several fields including filename, metadata, and file content.
@@ -319,7 +352,7 @@ const driveItems = await organizationsClient.teams.getTeamDriveItemsByQuery(team
 
 Get the list of the effective sharing permissions on a driveItem (among the ones of the driveItems of the currently logged in user).
 (output type: MicrosoftGraph.Permission)
-```
+```js
 var itemId = "<itemId>";    // Valid id of a driveItem of the currently logged in user (required).
 const item = await organizationsClient.drive.getMyDriveItemSharingPermissions(itemId);
 ```

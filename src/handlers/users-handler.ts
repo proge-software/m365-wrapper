@@ -1,32 +1,40 @@
 import { Client } from "@microsoft/microsoft-graph-client";
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import UserSearchRequest from "../models/requests/user-search-request";
+import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
+import ErrorsHandler from "./errors-handler";
 
 export default class UsersHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async getUsers(UserSearchRequest: UserSearchRequest): Promise<MicrosoftGraph.User[]> {
-        let query = this.client.api('/users');
+    public async getUsers(UserSearchRequest: UserSearchRequest): Promise<M365WrapperDataResult<MicrosoftGraph.User[]>> {
 
-        if (UserSearchRequest && UserSearchRequest.issuer && UserSearchRequest.mail) {
-            query = query.filter(`identities/any(c:c/issuerAssignedId eq '${UserSearchRequest.mail}' and c/issuer eq '${UserSearchRequest.issuer}')`);
-        }
-
-        let res: MicrosoftGraph.User[] = await query.select('displayName,givenName,postalCode,mail,surname,userPrincipalName')
-            .get();
-
-        return res;
-    }
-
-    public async getUserByIdOrEmail(userIdOrEmail: string): Promise<[MicrosoftGraph.User]> {
         try {
-            const retUser = await this.client.api(`/users/${userIdOrEmail}`)
+            let query = this.client.api('/users');
+
+            if (UserSearchRequest && UserSearchRequest.issuer && UserSearchRequest.mail) {
+                query = query.filter(`identities/any(c:c/issuerAssignedId eq '${UserSearchRequest.mail}' and c/issuer eq '${UserSearchRequest.issuer}')`);
+            }
+
+            let res: MicrosoftGraph.User[] = await query.select('displayName,givenName,postalCode,mail,surname,userPrincipalName')
                 .get();
-            return retUser;
+
+            return M365WrapperDataResult.createSuccess(res);
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async getUserByIdOrEmail(userIdOrEmail: string): Promise<M365WrapperDataResult<[MicrosoftGraph.User]>> {
+        try {
+            let retUser: [MicrosoftGraph.User] = await this.client.api(`/users/${userIdOrEmail}`)
+                .get();
+            return M365WrapperDataResult.createSuccess(retUser);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
         }
     }
 

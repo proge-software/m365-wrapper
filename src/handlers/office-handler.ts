@@ -1,14 +1,16 @@
 import { Client } from "@microsoft/microsoft-graph-client";
+import M365WrapperResult from "../models/results/m365-wrapper-result";
+import ErrorsHandler from "./errors-handler";
 
 export default class OfficeHandler {
 
     constructor(private readonly client: Client) { }
 
-    public async isInMyLicenses(): Promise<boolean> {
+    public async isInMyLicenses(): Promise<M365WrapperResult> {
         try {
 
-            var bFound = false;
-            var teamsSkuPartNumbers: string[] = ['M365EDU_A3_FACULTY',
+            let result: M365WrapperResult = { isSuccess: false } as M365WrapperResult;
+            let teamsSkuPartNumbers: string[] = ['M365EDU_A3_FACULTY',
                 'M365EDU_A3_STUDENT',
                 'M365EDU_A5_FACULTY',
                 'M365EDU_A5_STUDENT',
@@ -39,25 +41,20 @@ export default class OfficeHandler {
                 'MIDSIZEPACK',
                 'LITEPACK_P2']
 
-            var licenses;
-            try {
-                licenses = await this.client.api(`/me/licenseDetails`)
+            let licenses = await this.client.api(`/me/licenseDetails`)
                     .get();
-            } catch (error) {
-                return false;
-            }
 
-            for (var i = 0; i < licenses.value.length; i++) {
+            for (let i = 0; i < licenses.value.length; i++) {
                 if (teamsSkuPartNumbers.includes(licenses.value[i].skuPartNumber)) {
-                    bFound = true;
+                    result.isSuccess = true;
                     break;
                 }
             }
 
-            return bFound;
+            return result;
         }
         catch (error) {
-            throw error;
+            return ErrorsHandler.getErrorResult(error);
         }
     }
 }
