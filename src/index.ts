@@ -49,12 +49,12 @@ class M365Wrapper {
     });
 
     this.office = new OfficeHandler(client);
-    this.user = new UserHandler(msalApplication, client);
-    this.users = new UsersHandler(client);
     this.calendar = new CalendarHandler(client);
     this.teams = new TeamsHandler(client);
     this.drive = new DriveHandler(client, this.office);
     this.sites = new SitesHandler(client);
+    this.user = new UserHandler(msalApplication, client, this.office, this.drive, this.sites, this.teams);
+    this.users = new UsersHandler(client);
   }
 
 }

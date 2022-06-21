@@ -1,5 +1,6 @@
 import { Client } from "@microsoft/microsoft-graph-client";
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import M365App from "../models/results/m365-app";
 import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
 import M365WrapperResult from "../models/results/m365-wrapper-result";
 import ErrorsHandler from "./errors-handler";
@@ -148,5 +149,13 @@ export default class DriveHandler {
         catch (error) {
             return ErrorsHandler.getErrorDataResult(error);
         }
+    }
+
+    public getApps(): M365WrapperDataResult<M365App[]>{
+        return new M365WrapperDataResult(null, [{
+            name: 'OneDrive',
+            link: 'https://onedrive.live.com',
+            icon: ''
+        }]);
     }
 }

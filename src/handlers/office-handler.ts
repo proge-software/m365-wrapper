@@ -1,4 +1,6 @@
 import { Client } from "@microsoft/microsoft-graph-client";
+import M365App from "../models/results/m365-app";
+import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
 import M365WrapperResult from "../models/results/m365-wrapper-result";
 import ErrorsHandler from "./errors-handler";
 
@@ -56,5 +58,25 @@ export default class OfficeHandler {
         catch (error) {
             return ErrorsHandler.getErrorResult(error);
         }
+    }
+
+    public getApps(): M365WrapperDataResult<M365App[]>{
+        return new M365WrapperDataResult(null, [{
+            name: 'Office',
+            link: 'https://www.office.com',
+            icon: ''
+        },{
+            name: 'Word',
+            link: 'https://www.office.com/launch/word',
+            icon: ''
+        },{
+            name: 'Excel',
+            link: 'https://www.office.com/launch/excel',
+            icon: ''
+        },{
+            name: 'PowerPoint',
+            link: 'https://www.office.com/launch/powerpoint',
+            icon: ''
+        }]);
     }
 }
