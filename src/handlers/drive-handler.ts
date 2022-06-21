@@ -185,7 +185,7 @@ export default class DriveHandler {
         }
     }
 
-    public async uploadSmallFile(driveId: string, parentItemId: string, filename: string, stream: any): Promise<M365WrapperDataResult<DriveItem>> {
+    public async uploadSmallFile(driveId: string, parentItemId: string, filename: string, stream: File): Promise<M365WrapperDataResult<DriveItem>> {
         try {
             let folderItems = await this.getDriveFolderItems(driveId, parentItemId);
             let folderItem = folderItems.data.find(x => x.name == filename);
@@ -207,7 +207,7 @@ export default class DriveHandler {
         }
     }
     
-    public async uploadLargeFile(driveId: string, parentItemId: string, filename: string, stream: any): Promise<M365WrapperDataResult<DriveItem>> {
+    public async uploadLargeFile(driveId: string, parentItemId: string, filename: string, stream: File): Promise<M365WrapperDataResult<DriveItem>> {
         try {
 
             let result: DriveItem = await this.client.api(`/drives/${driveId}/items/${parentItemId}:/${filename}:/content`)
