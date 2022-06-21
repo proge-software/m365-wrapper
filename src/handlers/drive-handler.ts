@@ -1,5 +1,5 @@
 import { Client } from "@microsoft/microsoft-graph-client";
-import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import { Drive, DriveItem, Permission } from '@microsoft/microsoft-graph-types';
 import M365App from "../models/results/m365-app";
 import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
 import M365WrapperResult from "../models/results/m365-wrapper-result";
@@ -43,9 +43,9 @@ export default class DriveHandler {
         }
     }
 
-    public async getMyDrives(): Promise<M365WrapperDataResult<[MicrosoftGraph.Drive]>> {
+    public async getMyDrives(): Promise<M365WrapperDataResult<[Drive]>> {
         try {
-            let items: [MicrosoftGraph.Drive] = await this.client.api("/me/drives")
+            let items: [Drive] = await this.client.api("/me/drives")
                 .get();
 
             return M365WrapperDataResult.createSuccess(items);
@@ -55,7 +55,7 @@ export default class DriveHandler {
         }
     }
 
-    public async getMyDriveItemsByQuery(queryText: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
+    public async getMyDriveItemsByQuery(queryText: string): Promise<M365WrapperDataResult<[DriveItem]>> {
         try {
             let items = await this.client.api(`/me/drive/root/search(q='${queryText}')`)
                 .get();
@@ -67,7 +67,7 @@ export default class DriveHandler {
         }
     }
 
-    public async getMyDriveAndSharedItemsByQuery(queryText: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
+    public async getMyDriveAndSharedItemsByQuery(queryText: string): Promise<M365WrapperDataResult<[DriveItem]>> {
         try {
             let items = await this.client.api(`/me/drive/search(q='${queryText}')`)
                 .get();
@@ -79,7 +79,7 @@ export default class DriveHandler {
         }
     }
 
-    public async getMySharedItems(): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
+    public async getMySharedItems(): Promise<M365WrapperDataResult<[DriveItem]>> {
         try {
             let items = await this.client.api(`/me/drive/sharedWithMe`)
                 .get();
@@ -91,7 +91,7 @@ export default class DriveHandler {
         }
     }
 
-    public async getDriveItems(driveId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
+    public async getDriveItems(driveId: string): Promise<M365WrapperDataResult<[DriveItem]>> {
         try {
             let items = await this.client.api(`/drives/${driveId}/root/children`)
                 .get();
@@ -103,7 +103,7 @@ export default class DriveHandler {
         }
     }
 
-    public async getDriveItemsByQuery(driveId: string, queryText: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
+    public async getDriveItemsByQuery(driveId: string, queryText: string): Promise<M365WrapperDataResult<[DriveItem]>> {
         try {
             let items = await this.client.api(`/drives/${driveId}/root/search(q='${queryText}')`)
                 .get();
@@ -115,7 +115,7 @@ export default class DriveHandler {
         }
     }
 
-    public async getDriveFolderItems(driveId: string, folderId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.DriveItem]>> {
+    public async getDriveFolderItems(driveId: string, folderId: string): Promise<M365WrapperDataResult<[DriveItem]>> {
         try {
             let items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`)
                 .get();
@@ -127,7 +127,7 @@ export default class DriveHandler {
         }
     }
 
-    public async getDriveItem(driveId: string, itemId: string): Promise<M365WrapperDataResult<MicrosoftGraph.DriveItem>> {
+    public async getDriveItem(driveId: string, itemId: string): Promise<M365WrapperDataResult<DriveItem>> {
         try {
             let items = await this.client.api(`/drives/${driveId}/items/${itemId}`)
                 .get();
@@ -139,7 +139,7 @@ export default class DriveHandler {
         }
     }
 
-    public async getMyDriveItemSharingPermissions(itemId: string): Promise<M365WrapperDataResult<[MicrosoftGraph.Permission]>> {
+    public async getMyDriveItemSharingPermissions(itemId: string): Promise<M365WrapperDataResult<[Permission]>> {
         try {
             let items = await this.client.api(`/me/drive/items/${itemId}/permissions`)
                 .get();
@@ -151,11 +151,37 @@ export default class DriveHandler {
         }
     }
 
-    public getApps(): M365WrapperDataResult<M365App[]>{
+    public getApps(): M365WrapperDataResult<M365App[]> {
         return new M365WrapperDataResult(null, [{
             name: 'OneDrive',
             link: 'https://onedrive.live.com',
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOm5vbmU7fS5jbHMtMntmaWxsOiMwMzY0Yjg7fS5jbHMtM3tmaWxsOiMwMDc4ZDQ7fS5jbHMtNHtmaWxsOiMxNDkwZGY7fS5jbHMtNXtmaWxsOiMyOGE4ZWE7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5PbmVEcml2ZV8yNHg8L3RpdGxlPjxnIGlkPSJPbmVEcml2ZSI+PHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0xNC41LDE1bDQuOTUtNC43NEE3LjUsNy41LDAsMCwwLDUuOTIsOEM2LDgsMTQuNSwxNSwxNC41LDE1WiIvPjxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTkuMTUsOC44OWgwQTYsNiwwLDAsMCw2LDhINS45MmE2LDYsMCwwLDAtNC44NCw5LjQzTDguNSwxNi41bDUuNjktNC41OVoiLz48cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0xOS40NSwxMC4yNmgtLjMyYTQuODQsNC44NCwwLDAsMC0xLjk0LjRoMGwtMywxLjI2TDE3LjUsMTZsNS45MiwxLjQ0YTQuODgsNC44OCwwLDAsMC00LTcuMThaIi8+PHBhdGggY2xhc3M9ImNscy01IiBkPSJNMS4wOCwxNy40M0E2LDYsMCwwLDAsNiwyMEgxOS4xM2E0Ljg5LDQuODksMCwwLDAsNC4yOS0yLjU2bC05LjIzLTUuNTNaIi8+PC9nPjwvc3ZnPg=='
         }]);
+    }
+
+    public async createFolder(driveId: string, parentItemId: string, folder: string | DriveItem): Promise<M365WrapperDataResult<DriveItem>> {
+        try {
+
+            let driveItem: DriveItem;
+
+            if (typeof folder === 'string') {
+                driveItem = {
+                    name: folder,
+                    folder: {},
+                    '@microsoft.graph.conflictBehavior': 'rename'
+                } as DriveItem;
+            }
+            else {
+                driveItem = folder;
+            }
+
+            let result: DriveItem = await this.client.api(`/drives/${driveId}/items/${parentItemId}/children`)
+                .post(driveItem);
+
+            return M365WrapperDataResult.createSuccess(result);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
     }
 }
