@@ -121,6 +121,11 @@ Determines whether the currently logged in user's licenses include Microsoft Off
 const isOfficeInMyLicenses = await organizationsClient.office.isInMyLicenses();
 ``` 
 
+Retrieve all Microsoft 365 applications included in the logged in user's license (output type: [M365App](#m365app)[])
+```js
+const isOfficeInMyLicenses = await organizationsClient.office.isInMyLicenses();
+``` 
+
 ### Teams info
 
 Determines whether the currently logged in user's licenses include Microsoft Teams (output type: boolean)
@@ -355,4 +360,17 @@ Get the list of the effective sharing permissions on a driveItem (among the ones
 ```js
 var itemId = "<itemId>";    // Valid id of a driveItem of the currently logged in user (required).
 const item = await organizationsClient.drive.getMyDriveItemSharingPermissions(itemId);
+```
+
+## Models
+
+### M365App
+
+```json
+{
+    "name": "", // OneDrive, Office, Word, Excel, PowerPoint, SharePoint and Teams
+    "link": "", // e.g. https://onedrive.live.com
+    "icon": ""  // base64 image to use in the img tag or css
+}
+
 ```

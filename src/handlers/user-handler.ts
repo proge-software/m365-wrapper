@@ -2,9 +2,16 @@ import { PublicClientApplication, AuthenticationResult, AccountInfo, PopupReques
 import { Client } from "@microsoft/microsoft-graph-client";
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import PopupRequestConstants from "../constants/popup-request-constants";
+import SkuConstants from "../constants/sku-constants";
+import { Microsoft365Products } from "../enums/microsoft-365-products";
+import M365App from "../models/results/m365-app";
 import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
 import M365WrapperResult from "../models/results/m365-wrapper-result";
+import DriveHandler from "./drive-handler";
 import ErrorsHandler from "./errors-handler";
+import OfficeHandler from "./office-handler";
+import SitesHandler from "./sites-handler";
+import TeamsHandler from "./teams-handler";
 
 export default class UserHandler {
 
@@ -13,7 +20,7 @@ export default class UserHandler {
         prompt: PopupRequestConstants.PROMPT_SELECT_ACCOUNT
     };
 
-    constructor(private readonly msalApplication: PublicClientApplication, private readonly client: Client) { }
+    constructor(private readonly msalApplication: PublicClientApplication, private readonly client: Client, private readonly office: OfficeHandler, private readonly drive: DriveHandler, private readonly sites: SitesHandler, private readonly teams: TeamsHandler) { }
 
     public async loginPopup(): Promise<M365WrapperDataResult<AuthenticationResult>> {
 
@@ -135,6 +142,64 @@ export default class UserHandler {
             let retReport = await this.client.api("/reports/getOffice365ActiveUserDetail(period='D7')")
                 .get();
             return M365WrapperDataResult.createSuccess(retReport);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async getMyApps(): Promise<M365WrapperDataResult<M365App[]>> {
+
+        try {
+            let licenses: MicrosoftGraph.LicenseDetails[] = (await this.client.api(`/me/licenseDetails`)
+                .get()).value;
+
+            let result: M365App[] = [];
+            for (let i = 0; i < licenses.length; i++) {
+                let license = licenses[i];
+
+                let microsoft365Products: Microsoft365Products[] = SkuConstants.MAPPING_SKU_PRODUCTS[license.skuPartNumber];
+
+                let officeHasBeenInserted: boolean = false;
+                let oneDriveHasBeenInserted: boolean = false;
+                let sharePointHasBeenInserted: boolean = false;
+                let teamsHasBeenInserted: boolean = false;
+
+                if (microsoft365Products != null && microsoft365Products.length > 0) {
+                    for (let j = 0; j < microsoft365Products.length; j++) {
+
+                        let microsoft365Product = microsoft365Products[j];
+                        switch (microsoft365Product) {
+                            case Microsoft365Products.Office:
+                                if (!officeHasBeenInserted) {
+                                    result = result.concat(this.office.getApps().data);
+                                    officeHasBeenInserted = true;
+                                }
+                                break;
+                            case Microsoft365Products.OneDrive:
+                                if (!oneDriveHasBeenInserted) {
+                                    result = result.concat(this.drive.getApps().data);
+                                    oneDriveHasBeenInserted = true;
+                                }
+                                break;
+                            case Microsoft365Products.SharePoint:
+                                if (!sharePointHasBeenInserted) {
+                                    result = result.concat((await this.sites.getApps()).data);
+                                    sharePointHasBeenInserted = true;
+                                }
+                                break;
+                            case Microsoft365Products.Teams:
+                                if (!teamsHasBeenInserted) {
+                                    result = result.concat(this.teams.getApps().data);
+                                    teamsHasBeenInserted = true;
+                                }
+                                break;
+                        }
+                    };
+                }
+            };
+
+            return M365WrapperDataResult.createSuccess(result);
         }
         catch (error) {
             return ErrorsHandler.getErrorDataResult(error);
