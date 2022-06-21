@@ -115,12 +115,12 @@ export default class DriveHandler {
         }
     }
 
-    public async getDriveFolderItems(driveId: string, folderId: string): Promise<M365WrapperDataResult<[DriveItem]>> {
+    public async getDriveFolderItems(driveId: string, folderId: string): Promise<M365WrapperDataResult<DriveItem[]>> {
         try {
             let items = await this.client.api(`/drives/${driveId}/items/${folderId}/children`)
                 .get();
 
-            return M365WrapperDataResult.createSuccess(items);
+            return M365WrapperDataResult.createSuccess(items.value);
         }
         catch (error) {
             return ErrorsHandler.getErrorDataResult(error);
@@ -177,6 +177,41 @@ export default class DriveHandler {
 
             let result: DriveItem = await this.client.api(`/drives/${driveId}/items/${parentItemId}/children`)
                 .post(driveItem);
+
+            return M365WrapperDataResult.createSuccess(result);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async uploadSmallFile(driveId: string, parentItemId: string, filename: string, stream: any): Promise<M365WrapperDataResult<DriveItem>> {
+        try {
+            let folderItems = await this.getDriveFolderItems(driveId, parentItemId);
+            let folderItem = folderItems.data.find(x => x.name == filename);
+
+            let result: DriveItem;
+            if(folderItem != undefined) {
+                result = await this.client.api(`/drives/${driveId}/items/${folderItem.id}/content`)
+                .put(stream);
+            }
+            else {
+                result = await this.client.api(`/drives/${driveId}/items/${parentItemId}:/${filename}:/content`)
+                .put(stream);
+            }
+
+            return M365WrapperDataResult.createSuccess(result);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+    
+    public async uploadLargeFile(driveId: string, parentItemId: string, filename: string, stream: any): Promise<M365WrapperDataResult<DriveItem>> {
+        try {
+
+            let result: DriveItem = await this.client.api(`/drives/${driveId}/items/${parentItemId}:/${filename}:/content`)
+                .put(stream);
 
             return M365WrapperDataResult.createSuccess(result);
         }
