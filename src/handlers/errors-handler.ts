@@ -11,6 +11,9 @@ export default class ErrorsHandler {
         if (catchedError instanceof AuthError) {
             error = new M365WrapperError(catchedError, catchedError.errorCode);
         }
+        else if (catchedError instanceof M365WrapperError) {
+            error = catchedError;
+        }
         else if (catchedError instanceof Error) {
             error = new M365WrapperError(catchedError);
         }
