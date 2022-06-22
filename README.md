@@ -362,6 +362,38 @@ var itemId = "<itemId>";    // Valid id of a driveItem of the currently logged i
 const item = await organizationsClient.drive.getMyDriveItemSharingPermissions(itemId);
 ```
 
+### SharePoint
+
+Method to retrieve a site through its id. (output type: MicrosoftGraph.Site)
+
+```js
+const site = await organizationsClient.sites.getSite('<siteId>');
+```
+
+Method to retrieve a list of sites that match the query conditions. (output type: MicrosoftGraph.Site[])
+
+```js
+const sites = await organizationsClient.sites.getSitesByQuery('<query>');
+```
+
+Method to retrieve the list of sites to which the user has access. (output type: MicrosoftGraph.Site[])
+
+```js
+const sites = await organizationsClient.sites.getMySites();
+```
+
+Method to retrieve the list of sub-sites. (output type: MicrosoftGraph.Site[])
+
+```js
+const sites = await organizationsClient.sites.getSubsites('<siteId>');
+```
+
+Method to retrieve the list of files in the site root. (output type: MicrosoftGraph.DriveItem[])
+
+```js
+const driveItems = await organizationsClient.sites.getSiteDriveItemsAtRoot('<siteId>');
+```
+
 ## Models
 
 ### M365App
