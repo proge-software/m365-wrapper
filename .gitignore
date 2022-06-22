@@ -3,3 +3,4 @@ lib/
 lib-esm/
 node_modules/
 _bundles/
+sample/m365-wrapper-react/src/local-settings.js
