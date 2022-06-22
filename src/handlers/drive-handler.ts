@@ -1,5 +1,5 @@
 import { Client } from "@microsoft/microsoft-graph-client";
-import { Drive, DriveItem, Permission } from '@microsoft/microsoft-graph-types';
+import { Drive, DriveItem, Permission, UploadSession } from '@microsoft/microsoft-graph-types';
 import M365App from "../models/results/m365-app";
 import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
 import M365WrapperResult from "../models/results/m365-wrapper-result";
@@ -168,7 +168,7 @@ export default class DriveHandler {
                 driveItem = {
                     name: folder,
                     folder: {},
-                    '@microsoft.graph.conflictBehavior': 'rename'
+                    '@microsoft.graph.conflictBehavior': 'replace'
                 } as DriveItem;
             }
             else {
@@ -199,19 +199,6 @@ export default class DriveHandler {
                 result = await this.client.api(`/drives/${driveId}/items/${parentItemId}:/${filename}:/content`)
                 .put(stream);
             }
-
-            return M365WrapperDataResult.createSuccess(result);
-        }
-        catch (error) {
-            return ErrorsHandler.getErrorDataResult(error);
-        }
-    }
-    
-    public async uploadLargeFile(driveId: string, parentItemId: string, filename: string, stream: File): Promise<M365WrapperDataResult<DriveItem>> {
-        try {
-
-            let result: DriveItem = await this.client.api(`/drives/${driveId}/items/${parentItemId}:/${filename}:/content`)
-                .put(stream);
 
             return M365WrapperDataResult.createSuccess(result);
         }
