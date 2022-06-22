@@ -1,11 +1,12 @@
 import M365Wrapper from '../node_modules/m365-wrapper/lib/index';
 import React from 'react';
 import './App.css';
+import { LocalSettings } from './local-settings';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { userInfo: undefined, m365wrapper: new M365Wrapper('{APP ID}') };
+    this.state = { userInfo: undefined, m365wrapper: new M365Wrapper(LocalSettings.APPLICATION_ID) };
   }
 
   async componentDidMount() {

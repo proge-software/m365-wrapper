@@ -20,12 +20,72 @@ export default class SitesHandler {
         }
     }
 
-    public async getSiteDrives(siteIdOrName: string): Promise<M365WrapperDataResult<[Drive]>> {
+    public async getSite(siteId: string): Promise<M365WrapperDataResult<Site>> {
         try {
-            let items: [Drive] = await this.client.api(`/sites/${siteIdOrName}/drives`)
+            let sites: Site = await this.client.api(`/sites/${siteId}`)
                 .get();
 
-            return M365WrapperDataResult.createSuccess(items);
+            return M365WrapperDataResult.createSuccess(sites);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async getSitesByQuery(queryText: string): Promise<M365WrapperDataResult<Site[]>> {
+        try {
+            let items = await this.client.api(`sites?search=${queryText}`)
+                .get();
+
+            return M365WrapperDataResult.createSuccess(items.value);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async getMySites(): Promise<M365WrapperDataResult<Site[]>> {
+        try {
+            let sites = await this.client.api(`sites?search=*`)
+                .get();
+
+            return M365WrapperDataResult.createSuccess(sites.value);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async getSubsites(siteId: string): Promise<M365WrapperDataResult<Site[]>> {
+        try {
+            let sites = await this.client.api(`/sites/${siteId}/sites`)
+                .get();
+
+            return M365WrapperDataResult.createSuccess(sites.value);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async getSiteDrives(siteIdOrName: string): Promise<M365WrapperDataResult<[Drive]>> {
+        try {
+            let items = await this.client.api(`/sites/${siteIdOrName}/drives`)
+                .get();
+
+            return M365WrapperDataResult.createSuccess(items.value);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async getSiteDriveItemsAtRoot(siteId: string): Promise<M365WrapperDataResult<DriveItem[]>> {
+        try {
+            let items = await this.client.api(`/sites/${siteId}/drive/root/children`)
+                .get();
+
+            return M365WrapperDataResult.createSuccess(items.value);
         }
         catch (error) {
             return ErrorsHandler.getErrorDataResult(error);
@@ -34,16 +94,16 @@ export default class SitesHandler {
 
     public async getSiteDriveItemsByQuery(siteIdOrName: string, queryText: string): Promise<M365WrapperDataResult<[DriveItem]>> {
         try {
-            let items: [DriveItem] = await this.client.api(`/sites/${siteIdOrName}/drive/root/search(q='${queryText}')`)
+            let items = await this.client.api(`/sites/${siteIdOrName}/drive/root/search(q='${queryText}')`)
                 .get();
 
-            return M365WrapperDataResult.createSuccess(items);
+            return M365WrapperDataResult.createSuccess(items.value);
         }
         catch (error) {
             return ErrorsHandler.getErrorDataResult(error);
         }
     }
-    
+
     public async getApps(): Promise<M365WrapperDataResult<M365App[]>> {
 
         let rootSiteUrl: string = (await this.getRootSite()).data.webUrl;
