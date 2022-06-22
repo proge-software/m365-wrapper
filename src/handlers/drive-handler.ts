@@ -1,5 +1,5 @@
 import { Client } from "@microsoft/microsoft-graph-client";
-import { Drive, DriveItem, Permission, UploadSession } from '@microsoft/microsoft-graph-types';
+import { Drive, DriveItem, Permission, Quota, UploadSession } from '@microsoft/microsoft-graph-types';
 import M365App from "../models/results/m365-app";
 import M365WrapperDataResult from "../models/results/m365-wrapper-data-result";
 import M365WrapperResult from "../models/results/m365-wrapper-result";
@@ -49,6 +49,18 @@ export default class DriveHandler {
                 .get();
 
             return M365WrapperDataResult.createSuccess(items);
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
+    public async getDrive(driveId: string): Promise<M365WrapperDataResult<Drive>> {
+        try {
+            let drive: Drive = await this.client.api(`/drives/${driveId}`)
+                .get();
+
+            return M365WrapperDataResult.createSuccess(drive);
         }
         catch (error) {
             return ErrorsHandler.getErrorDataResult(error);
@@ -151,6 +163,26 @@ export default class DriveHandler {
         }
     }
 
+    public async getDriveSpaceInfo(driveId: string): Promise<M365WrapperDataResult<Quota>> {
+        try {
+            let getDriveResult = await this.getDrive(driveId);
+
+            if (getDriveResult.isSuccess) {
+
+                if (getDriveResult.data.quota)
+                    return M365WrapperDataResult.createSuccess(getDriveResult.data.quota);
+                else
+                    throw 'Space information is not available';
+            }
+            else {
+                return ErrorsHandler.getErrorDataResult(getDriveResult.error);
+            }
+        }
+        catch (error) {
+            return ErrorsHandler.getErrorDataResult(error);
+        }
+    }
+
     public getApps(): M365WrapperDataResult<M365App[]> {
         return new M365WrapperDataResult(null, [{
             name: 'OneDrive',
@@ -187,17 +219,24 @@ export default class DriveHandler {
 
     public async uploadSmallFile(driveId: string, parentItemId: string, filename: string, stream: File): Promise<M365WrapperDataResult<DriveItem>> {
         try {
+            let getDriveSpaceInfoResult = await this.getDriveSpaceInfo(driveId);
+
+            if(getDriveSpaceInfoResult.isSuccess) {
+                if(getDriveSpaceInfoResult.data.remaining && getDriveSpaceInfoResult.data.remaining < stream.size)
+                    throw 'Insufficient drive space';
+            }
+
             let folderItems = await this.getDriveFolderItems(driveId, parentItemId);
             let folderItem = folderItems.data.find(x => x.name == filename);
 
             let result: DriveItem;
-            if(folderItem != undefined) {
+            if (folderItem != undefined) {
                 result = await this.client.api(`/drives/${driveId}/items/${folderItem.id}/content`)
-                .put(stream);
+                    .put(stream);
             }
             else {
                 result = await this.client.api(`/drives/${driveId}/items/${parentItemId}:/${filename}:/content`)
-                .put(stream);
+                    .put(stream);
             }
 
             return M365WrapperDataResult.createSuccess(result);
